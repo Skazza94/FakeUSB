@@ -1,0 +1,43 @@
+# usb-mitm binary
+usb-mitm
+#object files
+*.o
+*.d
+*.so
+*.pyc
+#shell to move changes from usb-test
+merge.sh
+#eclipse stuff
+.project
+.cproject
+test/relaytest/relaytest
+typescript
+#ptp stuff
+.ptp-sync/
+.ptp-sync-folder
+.settings
+# bindings
+usbproxy_wrap.cxx
+usbproxy.py
+#vi(m)
+*.swp
+#cmake stuff
+CMakeFiles
+cmake_install.cmake
+cmake_uninstall.cmake
+CMakeCache.txt
+Makefile
+version.h
+version
+#other stuff
+install_manifest.txt
+a.out
+.svn/
+#compiled cmake
+/Plugins/
+/tools/
+/lib/
+/bindings/
+.goutputstream-XYX0OY
+sample/
+AUTHORS

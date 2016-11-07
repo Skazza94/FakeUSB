@@ -60,6 +60,7 @@ int HostProxy_GadgetFS::generate_descriptor(Device* device) {
 
 
 	Configuration* cfg;
+
 	for (i=1;i<=device->get_descriptor()->bNumConfigurations;i++) {
 		if (device->is_highspeed() && device->get_device_qualifier()) {
 			cfg=device->get_device_qualifier()->get_configuration(i);
@@ -90,34 +91,7 @@ int HostProxy_GadgetFS::generate_descriptor(Device* device) {
 			buf->bDescriptorType=USB_DT_CONFIG;
 			buf->bmAttributes&=(~USB_CONFIG_ATT_WAKEUP);
 			buf->wTotalLength=length;
-			/* Adjust polling rate for high speed descriptor */
-			if(!device->is_highspeed()) {
-			    char* pointer = (char*) buf;
-			    pointer += buf->bLength;    //move to end of cfg desc
 
-			    for(unsigned int k=0;k<buf->bNumInterfaces;k++){    
-				//move to end of intf desc
-				pointer += cfg->get_interface(k)->get_descriptor()->bLength;
-
-				if(cfg->get_interface(k)->has_HID()){
-				    pointer+= cfg->get_interface(k)->get_HID_descriptor_length();
-				}
-
-				for(int gen_idx = 0; gen_idx < cfg->get_interface(k)->get_generic_descriptor_count();gen_idx++){
-				    pointer+= cfg->get_interface(k)->get_generic_descriptor(gen_idx)->bLength;
-				}
-
-				for(int ep_idx = 0; ep_idx < cfg->get_interface(k)->get_descriptor()->bNumEndpoints;ep_idx++){
-				    usb_endpoint_descriptor* epd = (usb_endpoint_descriptor*) pointer;
-
-				    // conversion is: newValue = log2(8*oldValue)+1
-				    int newValue = (log10(8*(epd->bInterval))/log10(2)) + 1;
-				    fprintf(stderr,"old bInterval: %02X\ncalculated new bInterval: %02X\n",epd->bInterval,newValue);
-				    memset(&epd->bInterval,newValue,1);
-				    pointer+= epd->bLength;
-				}
-			    }
-			}
 			memcpy(ptr,buf,length);
 			free(buf);
 			ptr+=length;

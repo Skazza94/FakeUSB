@@ -9,12 +9,28 @@
 #define USBPROXY_EMULATEDDEVICE_H
 
 #include <stdio.h>
+#include <sstream>
 
 #include "Device.h"
+#include "DeviceProxy.h"
+#include "Configuration.h"
+#include "Interface.h"
+#include "HID.h"
+#include "Endpoint.h"
+#include "USBString.h"
+
+#include "HexString.h"
+
+class Configuration;
+class Interface;
+class HID;
+class Endpoint;
+class USBString;
 
 class EmulatedDevice : public Device {
 private:
-	DeviceProxy * deviceProxy;
+	usb_string_descriptor * readStringDescriptorFromFile(FILE *);
+	void addStringFromFile(FILE *, __u8);
 
 public:
 	EmulatedDevice(DeviceProxy *);

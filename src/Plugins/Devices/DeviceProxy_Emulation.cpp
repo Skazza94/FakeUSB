@@ -5,12 +5,10 @@
 #include "DeviceProxy_Emulation.h"
 
 DeviceProxy_Emulation::DeviceProxy_Emulation(ConfigParser * cfg) {
-
+	this->cfg = cfg;
 }
 
-DeviceProxy_Emulation::~DeviceProxy_Emulation() {
-
-}
+DeviceProxy_Emulation::~DeviceProxy_Emulation() {}
 
 int DeviceProxy_Emulation::connect() {
 	connected = true;
@@ -35,10 +33,12 @@ bool DeviceProxy_Emulation::is_connected() {
 }
 
 int DeviceProxy_Emulation::control_request(const usb_ctrlrequest *setup_packet, int *nbytes, __u8* dataptr) {
+	/* After configuration, is there anything to send or receive from host? */
 	return 0;
 }
 
 int DeviceProxy_Emulation::control_request(const usb_ctrlrequest *setup_packet, int *nbytes, __u8* dataptr,int timeout) {
+	/* After configuration, is there anything to send or receive from host? */
 	return 0;
 }
 
@@ -47,10 +47,12 @@ void DeviceProxy_Emulation::send_data(__u8 endpoint,__u8 attributes,__u16 maxPac
 }
 
 void DeviceProxy_Emulation::receive_data(__u8 endpoint,__u8 attributes,__u16 maxPacketSize,__u8** dataptr, int* length) {
+	/* Need an "AttackParser" to know what to do with received data? */
 	*length = 0;
 }
 
 void DeviceProxy_Emulation::receive_data(__u8 endpoint,__u8 attributes,__u16 maxPacketSize,__u8** dataptr, int* length,int timeout) {
+	/* Need an "AttackParser" to know what to do with received data? */
 	*length = 0;
 }
 
@@ -59,7 +61,7 @@ void DeviceProxy_Emulation::setConfig(Configuration* fs_cfg,Configuration* hs_cf
 }
 
 bool DeviceProxy_Emulation::is_highspeed() {
-	return true;
+	return false;
 }
 
 void DeviceProxy_Emulation::set_endpoint_interface(__u8 endpoint, __u8 interface) {

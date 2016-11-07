@@ -20,7 +20,7 @@ class USBString;
 class DeviceProxy;
 
 class Device {
-private:
+protected:
 	int hostAddress;
 	int deviceAddress;
 	usb_device_state hostState;

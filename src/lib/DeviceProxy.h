@@ -7,6 +7,7 @@
 
 #include <linux/usb/ch9.h>
 #include "Proxy.h"
+#include "Device.h"
 
 class Configuration;
 
@@ -16,6 +17,7 @@ private:
 
 public:
 	static const __u8 plugin_type=PLUGIN_DEVICEPROXY;
+	ConfigParser * cfg = NULL;
 	
 	DeviceProxy(const ConfigParser& cfg)
 		: Proxy(cfg.debugLevel)
@@ -24,7 +26,7 @@ public:
 	{}
 	virtual ~DeviceProxy() {}
 
-	void setDevice(Device * device) { this->device = device }
+	void setDevice(Device * device) { this->device = device; }
 
 	//return ETIMEDOUT if it times out
 	virtual int connect(int timeout=250)=0;

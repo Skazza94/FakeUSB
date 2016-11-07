@@ -180,13 +180,13 @@ void Interface::add_endpoint(Endpoint* endpoint) {
 	for(i=0;i<descriptor.bNumEndpoints;i++) {
 		if (!endpoints[i]) {
 			endpoints[i]=endpoint;
-			break;
+			return;
 		} else {
 			if (endpoints[i]->get_descriptor()->bEndpointAddress==endpoint->get_descriptor()->bEndpointAddress) {
 				delete(endpoints[i]);
 				/* not needed endpoints[i]=NULL; */
 				endpoints[i]=endpoint;
-				break;
+				return;
 			}
 		}
 	}
@@ -258,6 +258,10 @@ void Interface::add_generic_descriptor(GenericDescriptor* _gd) {
 		generic_descriptors=(GenericDescriptor**)malloc(sizeof(*generic_descriptors));
 	}
 	generic_descriptors[generic_descriptor_count-1]=d;
+}
+
+void Interface::set_hid_descriptor(HID * hid) {
+	hid_descriptor = hid;
 }
 
 const definition_error Interface::is_defined(__u8 configId,__u8 interfaceNum) {

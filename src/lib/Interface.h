@@ -52,6 +52,7 @@ class Interface {
 		const GenericDescriptor* get_generic_descriptor(__u8 index);
 		__u8 get_generic_descriptor_count();
 		void add_generic_descriptor(GenericDescriptor* _gd);
+		void set_hid_descriptor(HID * hid);
 		const definition_error is_defined(__u8 configId,__u8 interfaceNum);
 		Configuration* get_configuration();
 		const bool has_HID();

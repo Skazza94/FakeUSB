@@ -240,10 +240,9 @@ void Manager::start_control_relaying(){
 	// modified 20141007 atsumi@aizulab.com
   // I think interfaces are claimed soon after connecting device.
 	//Claim interfaces
-	Configuration* cfg;
-	cfg=device->get_active_configuration();
-	int ifc_cnt=cfg->get_descriptor()->bNumInterfaces;
-	for (int i=0;i<ifc_cnt;i++) {
+	Configuration* cfg = device->get_active_configuration();
+	__u8 ifc_cnt = cfg->get_descriptor()->bNumInterfaces;
+	for (__u8 i = 0; i < ifc_cnt; ++i) {
 	 	deviceProxy->claim_interface(i);
 	}
 
@@ -264,52 +263,6 @@ void Manager::start_control_relaying(){
 	//setup EP0 Reader & Writer
 	out_readers[0]=new RelayReader(out_endpoints[0],hostProxy, _readersend, _writersend);
 	out_writers[0]=new RelayWriter(out_endpoints[0],deviceProxy,this, _readersend, _writersend);
-
-	//apply filters to relayers
-	int i;
-	for(i=0;i<filterCount;i++) {
-		if (status!=USBM_SETUP) {stop_relaying();return;}
-		if (filters[i]->device.test(device)) {
-			if (out_endpoints[0] && filters[i]->endpoint.test(out_endpoints[0]) ) {
-				out_writers[0]->add_filter(filters[i]);
-			}
-		}
-	}
-
-	//apply injectors to relayers
-	for(i=0;i<injectorCount;i++) {
-		if (status!=USBM_SETUP) {stop_relaying();return;}
-		if (injectors[i]->device.test(device)) {
-			if (out_endpoints[0] && injectors[i]->endpoint.test(out_endpoints[0])) {
-/*
-				mqname = "/USBProxy(" + std::to_string(getpid()) + ")-00-" + shex(i);
-				mqd_t mq_out=mq_open(mqname.c_str(),O_RDWR | O_CREAT,S_IRWXU,&mqa);
-				if (mq_out == -1) {
-					std::cerr << "Error creating message queue '" << mqname << "'!\n";
-					exit(1);
-				}
-				mqname = "/USBProxy(" + std::to_string(getpid()) + ")-80-" + shex(i);
-				mqd_t mq_in=mq_open(mqname.c_str(),O_RDWR | O_CREAT,S_IRWXU,&mqa);
-				if (mq_in == -1) {
-					std::cerr << "Error creating message queue '" << mqname << "'!\n";
-					exit(1);
-				}
-*/
-				// injectors[i]->set_queue(0x80,mq_in); // TODO
-				//out_writers[0]->set_send_queue(mq_in); // TODO
-				//injectors[i]->set_queue(0, out_writers[0]->get_recv_queue()); // TODO
-			}
-		}
-	}
-
-	//create injector threads
-	if (injectorCount) {
-		injectorThreads.reserve(injectorCount);
-		for(i=0;i<injectorCount;i++) {
-			if (status!=USBM_SETUP) {stop_relaying();return;}
-			injectorThreads.push_back(std::thread(&Injector::listen, injectors[i]));
-		}
-	}
 
 	rc=hostProxy->connect(device);
 	spinner(0);
@@ -389,52 +342,6 @@ void Manager::start_data_relaying() {
 			out_readers[i]=new RelayReader(out_endpoints[i],(Proxy*)hostProxy, *out_queues[i]);
 			//RelayWriter(Endpoint* _endpoint,Proxy* _proxy,mqd_t _queue);
 			out_writers[i]=new RelayWriter(out_endpoints[i],(Proxy*)deviceProxy, *out_queues[i]);
-		}
-	}
-
-	//apply filters to relayers
-	for(i=0;i<filterCount;i++) {
-		if (filters[i]->device.test(device) && filters[i]->configuration.test(cfg)) {
-			for (j=1;j<16;j++) {
-				if (in_endpoints[j] && filters[i]->endpoint.test(in_endpoints[j]) && filters[i]->interface.test(in_endpoints[j]->get_interface())) {
-					in_writers[j]->add_filter(filters[i]);
-				}
-				if (out_endpoints[j] && filters[i]->endpoint.test(out_endpoints[j]) && filters[i]->interface.test(out_endpoints[j]->get_interface())) {
-					out_writers[j]->add_filter(filters[i]);
-				}
-			}
-		}
-	}
-
-	//apply injectors to relayers
-	for(i=0;i<injectorCount;i++) {
-		if (injectors[i]->device.test(device) && injectors[i]->configuration.test(cfg)) {
-			for (j=1;j<16;j++) {
-				if (in_endpoints[j] && injectors[i]->endpoint.test(in_endpoints[j]) && injectors[i]->interface.test(in_endpoints[j]->get_interface())) {
-/*
-					mqname = "/USBProxy(" + std::to_string(getpid()) + ")-" + shex(j|0x80) + '-' + shex(i);
-					mqd_t mq=mq_open(mqname.c_str(),O_RDWR | O_CREAT,S_IRWXU,&mqa);
-					if (mq == -1) {
-						std::cerr << "Error creating message queue '" << mqname << "'!\n";
-						exit(1);
-					}
-*/
-					//injectors[i]->set_queue(j|0x80,mq); TODO
-					//in_writers[j]->add_queue(mq); // TODO
-				}
-				if (out_endpoints[j] && injectors[i]->endpoint.test(out_endpoints[j]) && injectors[i]->interface.test(out_endpoints[j]->get_interface())) {
-/*
-					mqname = "/USBProxy(" + std::to_string(getpid()) + ")-" + shex(j) + '-' + shex(i);
-					mqd_t mq=mq_open(mqname.c_str(),O_RDWR | O_CREAT,S_IRWXU,&mqa);
-					if (mq == -1) {
-						std::cerr << "Error creating message queue '" << mqname << "'!\n";
-						exit(1);
-					}
-*/
-					//injectors[i]->set_queue(j,mq); // TODO
-					// out_writers[j]->add_queue(mq); // TODO
-				}
-			}
 		}
 	}
 

@@ -230,12 +230,12 @@ inline std::string shex(unsigned num)
 void Manager::start_control_relaying(){
 	status=USBM_SETUP;
 
-	//connect device proxy
-	int rc = deviceProxy->connect();
-
 	//populate device model
 	device = new EmulatedDevice(deviceProxy);
 	//device->print(0);
+
+	//connect device proxy
+	int rc = deviceProxy->connect();
 
 	// modified 20141007 atsumi@aizulab.com
   // I think interfaces are claimed soon after connecting device.
@@ -327,7 +327,7 @@ void Manager::start_data_relaying() {
 		// end
 	}
 
-	int i,j;
+	int i;
 	for (i=1;i<16;i++) {
 		if (in_endpoints[i]) {
 			//RelayReader(Endpoint* _endpoint,Proxy* _proxy,mqd_t _queue);

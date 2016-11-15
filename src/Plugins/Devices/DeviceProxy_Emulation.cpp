@@ -12,11 +12,13 @@ DeviceProxy_Emulation::~DeviceProxy_Emulation() {}
 
 int DeviceProxy_Emulation::connect() {
 	connected = true;
+	this->attack = new AttackHID(this->device);
 	return 0;
 }
 
 int DeviceProxy_Emulation::connect(int timeout) {
 	connected = true;
+	this->attack = new AttackHID(this->device);
 	return 0;
 }
 
@@ -33,13 +35,11 @@ bool DeviceProxy_Emulation::is_connected() {
 }
 
 int DeviceProxy_Emulation::control_request(const usb_ctrlrequest *setup_packet, int *nbytes, __u8* dataptr) {
-	/* After configuration, is there anything to send or receive from host? */
-	return 0;
+	return this->attack->control_request(*setup_packet, nbytes, dataptr);
 }
 
 int DeviceProxy_Emulation::control_request(const usb_ctrlrequest *setup_packet, int *nbytes, __u8* dataptr,int timeout) {
-	/* After configuration, is there anything to send or receive from host? */
-	return 0;
+	return this->attack->control_request(*setup_packet, nbytes, dataptr);
 }
 
 void DeviceProxy_Emulation::send_data(__u8 endpoint,__u8 attributes,__u16 maxPacketSize,__u8* dataptr,int length) {

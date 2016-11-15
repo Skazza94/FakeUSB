@@ -85,7 +85,7 @@ extern "C" int main(int argc, char **argv)
 	cfg->set("DeviceProxy", "DeviceProxy_Emulation");
 	cfg->set("HostProxy", "HostProxy_GadgetFS");
 
-	cfg->set("Device", "ethernet");
+	cfg->set("Device", "keyboard");
 
 	int status;
 	do {

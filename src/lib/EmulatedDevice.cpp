@@ -12,7 +12,7 @@ EmulatedDevice::EmulatedDevice(DeviceProxy * proxy) {
 	this->proxy->setDevice(this);
 
 	/* Get the device descriptor, configurations, interfaces, endpoints from a config file */
-	std::ostringstream deviceConfiguration; deviceConfiguration << "/home/debian/AntiUSBProxy/config/" << this->proxy->cfg->get("Device") << "Conf";
+	std::ostringstream deviceConfiguration; deviceConfiguration << "/home/debian/AntiUSBProxy/config/DeviceConfig/" << this->proxy->cfg->get("Device") << "Conf";
 
 	FILE * configFileHandler = fopen(deviceConfiguration.str().c_str(), "rb");
 
@@ -85,6 +85,8 @@ EmulatedDevice::EmulatedDevice(DeviceProxy * proxy) {
 				}
 
 				configurations[i]->add_interface(iface);
+
+				configurations[i]->print();
 			}
 		}
 

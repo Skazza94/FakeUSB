@@ -12,7 +12,7 @@
 class Configuration;
 
 class DeviceProxy : public Proxy {
-private:
+protected:
 	Device * device = NULL;
 
 public:

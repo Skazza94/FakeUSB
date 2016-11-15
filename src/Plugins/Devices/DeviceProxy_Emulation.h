@@ -7,11 +7,13 @@
 
 #include "Criteria.h"
 #include "DeviceProxy.h"
+#include "Attack.h"
+#include "AttackHID.h"
 
 class DeviceProxy_Emulation: public DeviceProxy {
 private:
 	bool connected = false;
-
+	Attack* attack = NULL;
 public:
 	DeviceProxy_Emulation(ConfigParser *);
 	~DeviceProxy_Emulation();

@@ -1,25 +1,33 @@
-#ifndef SRC_LIB_ATTACK_H_
-#define SRC_LIB_ATTACK_H_
+/*
+ * This class is cool. Really.
+ * What we do here is have a map with the descriptor type field (stored in the setup packet) and a callback function to execute (to handle setup requests).
+ * When a packet arrives, we know what send because we have a callback function that does the job for us.
+ *
+ * Author: Skazza
+ */
 
-#include "Device.h"
-#include "HexString.h"
-#include "USBString.h"
+#ifndef USBPROXY_ATTACK_H
+#define USBPROXY_ATTACK_H
 
-#include <linux/usb/ch9.h>
 #include <map>
 #include <functional>
 #include <string.h>
+#include <linux/usb/ch9.h>
+
+#include "Device.h"
+#include "USBString.h"
 
 class Attack {
 protected:
-	Device * device = NULL;
-	std::map<__u8, std::function<__u8(const usb_ctrlrequest, __u8*)>> configuration_packets;
+	Device * device;
+	std::map<__u8, std::function<__u8(const usb_ctrlrequest, __u8 *)>> setupType2Callback;
+
+	__u8 getStringDescriptor(const usb_ctrlrequest, __u8 *);
 
 public:
-	Attack(Device*);
-	virtual ~Attack();
-	int control_request(const usb_ctrlrequest, int *, __u8 *);
-	__u8 get_string(const usb_ctrlrequest, __u8*);
+	Attack(Device *);
+	~Attack();
+	int parseSetupRequest(const usb_ctrlrequest, int *, __u8 *);
 };
 
-#endif /* SRC_LIB_ATTACK_H_ */
+#endif /* USBPROXY_ATTACK_H */

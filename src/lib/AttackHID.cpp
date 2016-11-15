@@ -1,35 +1,37 @@
-/*
- * AttackHID.cpp
+ /*
+ * Sub-class of Attack. Adds few specific descriptor type fields + callbacks for HIDs.
+ * We also have a string that stores the device type which we're emulating. This is used in sub-classes.
  *
- *  Created on: 15 nov 2016
- *      Author: dibbidouble
+ * Author: dibbidouble & Skazza
  */
 
 #include "AttackHID.h"
 
-AttackHID::AttackHID(Device* device) : Attack(device) {
-	this->device_type = "keyboard";
-//	this->device_proxy = this->device->get_DeviceProxy();
-	this->configuration_packets.insert(std::pair<__u8, std::function<__u8(const usb_ctrlrequest, __u8*)>>(0x22, [=](const usb_ctrlrequest packet, __u8* dataptr) -> __u8 { return this->get_HIDreport(packet, dataptr); }));
+AttackHID::AttackHID(Device * device) : Attack(device) {
+	this->setupType2Callback.insert(
+		std::pair<__u8, std::function<__u8(const usb_ctrlrequest, __u8 *)>>(
+			0x22, std::bind(&AttackHID::getHIDReportDescriptor, this, std::placeholders::_1, std::placeholders::_2)
+		)
+	);
 }
 
-AttackHID::~AttackHID() {
-	// TODO Auto-generated destructor stub
-}
+AttackHID::~AttackHID() {}
 
-__u8 AttackHID::get_HIDreport(const usb_ctrlrequest packet, __u8* dataptr) {
-	std::ostringstream deviceConfiguration; deviceConfiguration << "/home/debian/AntiUSBProxy/config/HIDreport/" << this->device_type << "HIDreport";
+__u8 AttackHID::getHIDReportDescriptor(const usb_ctrlrequest packet, __u8 * dataPtr) {
+	std::ostringstream deviceHIDReport; deviceHIDReport << "/home/debian/AntiUSBProxy/config/HIDReport/" << this->device_type << "HIDReport";
 
-	__u8 dim =0;
+	FILE * hidReportFileHandler = fopen(deviceHIDReport.str().c_str(), "rb");
 
-	FILE * configFileHandler = fopen(deviceConfiguration.str().c_str(), "rb");
+	if(hidReportFileHandler) {
+		fseek(hidReportFileHandler, 0, SEEK_END);
+		long int structSize = ftell(hidReportFileHandler);
+		rewind(hidReportFileHandler);
 
-	if(configFileHandler) {
-		struct stat info;
-		stat(deviceConfiguration.str().c_str(), &info);
-		dim = info.st_size;
-		fread(dataptr, dim, 1, configFileHandler);
+		fread(dataPtr, structSize, 1, hidReportFileHandler);
+
+		fclose(hidReportFileHandler);
+		return structSize;
 	}
 
-	return dim;
+	return 0;
 }

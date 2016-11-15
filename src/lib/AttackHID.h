@@ -1,28 +1,27 @@
-/*
- * AttackHID.h
+ /*
+ * Sub-class of Attack. Adds few specific descriptor type fields + callbacks for HIDs.
+ * We also have a string that stores the device type which we're emulating. This is used in sub-classes.
  *
- *  Created on: 15 nov 2016
- *      Author: dibbidouble
+ * Author: dibbidouble & Skazza
  */
 
-#ifndef SRC_LIB_ATTACKHID_H_
-#define SRC_LIB_ATTACKHID_H_
-
-#include "Attack.h"
-//#include "DeviceProxy.h"
+#ifndef USBPROXY_ATTACKHID_H
+#define USBPROXY_ATTACKHID_H
 
 #include <sstream>
-#include <sys/stat.h>
 #include <string>
 
-class AttackHID : public Attack{
+#include "Attack.h"
+
+class AttackHID : public Attack {
 protected:
-	std::string device_type;
-//	DeviceProxy* device_proxy;
+	std::string deviceType;
+	
+	__u8 getHIDReportDescriptor(const usb_ctrlrequest, __u8 *);
+
 public:
-	AttackHID(Device*);
-	virtual ~AttackHID();
-	__u8 get_HIDreport(const usb_ctrlrequest, __u8*);
+	AttackHID(Device *);
+	~AttackHID();
 };
 
-#endif /* SRC_LIB_ATTACKHID_H_ */
+#endif /* USBPROXY_ATTACKHID_H */

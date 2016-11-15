@@ -1,8 +1,8 @@
 /*
- * EmulatedDevice.cpp
+ * This file is not part of original USBProxy.
+ * Emulates a real Device, loading the config file obtained pasting in a sequential file all the USB structs.
  *
- *  Created on: 04 nov 2016
- *      Author: skazza
+ * Author: Skazza
  */
 
 #include "EmulatedDevice.h"
@@ -12,7 +12,7 @@ EmulatedDevice::EmulatedDevice(DeviceProxy * proxy) {
 	this->proxy->setDevice(this);
 
 	/* Get the device descriptor, configurations, interfaces, endpoints from a config file */
-	std::ostringstream deviceConfiguration; deviceConfiguration << "/home/debian/AntiUSBProxy/config/DeviceConfig/" << this->proxy->cfg->get("Device") << "Conf";
+	std::ostringstream deviceConfiguration; deviceConfiguration << "/home/debian/AntiUSBProxy/config/DeviceConfig/" << this->proxy->cfg->get("Device") << "Config";
 
 	FILE * configFileHandler = fopen(deviceConfiguration.str().c_str(), "rb");
 
@@ -85,8 +85,6 @@ EmulatedDevice::EmulatedDevice(DeviceProxy * proxy) {
 				}
 
 				configurations[i]->add_interface(iface);
-
-				configurations[i]->print();
 			}
 		}
 

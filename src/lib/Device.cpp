@@ -473,6 +473,6 @@ const definition_error Device::is_defined() {
 	return definition_error();
 }
 
-DeviceProxy* Device::get_DeviceProxy() {
+DeviceProxy* Device::getDeviceProxy() {
 	return this->proxy;
 }

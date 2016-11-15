@@ -1,5 +1,9 @@
 /*
- * This file is part of USBProxy.
+ * This file is not part of original USBProxy.
+ * This DeviceProxy doesn't actually do nothing. It doesn't communicate with a real device (like libUSB one).
+ * What we do is redirect all requests and packets to the Attack class, which knows how to parse them.
+ *
+ * Author: Skazza
  */
 
 #include "DeviceProxy_Emulation.h"
@@ -12,13 +16,13 @@ DeviceProxy_Emulation::~DeviceProxy_Emulation() {}
 
 int DeviceProxy_Emulation::connect() {
 	connected = true;
-	this->attack = new AttackHID(this->device);
+	this->initAttack();
 	return 0;
 }
 
 int DeviceProxy_Emulation::connect(int timeout) {
 	connected = true;
-	this->attack = new AttackHID(this->device);
+	this->initAttack();
 	return 0;
 }
 
@@ -35,11 +39,11 @@ bool DeviceProxy_Emulation::is_connected() {
 }
 
 int DeviceProxy_Emulation::control_request(const usb_ctrlrequest *setup_packet, int *nbytes, __u8* dataptr) {
-	return this->attack->control_request(*setup_packet, nbytes, dataptr);
+	return this->attack->parseSetupRequest(*setup_packet, nbytes, dataptr);
 }
 
 int DeviceProxy_Emulation::control_request(const usb_ctrlrequest *setup_packet, int *nbytes, __u8* dataptr,int timeout) {
-	return this->attack->control_request(*setup_packet, nbytes, dataptr);
+	return this->attack->parseSetupRequest(*setup_packet, nbytes, dataptr);
 }
 
 void DeviceProxy_Emulation::send_data(__u8 endpoint,__u8 attributes,__u16 maxPacketSize,__u8* dataptr,int length) {
@@ -78,6 +82,11 @@ void DeviceProxy_Emulation::release_interface(__u8 interface) {
 
 __u8 DeviceProxy_Emulation::get_address() {
 	return 0;
+}
+
+/* We use a method because we load the Attack class to use from the config file. */
+void DeviceProxy_Emulation::initAttack() {
+	this->attack = new AttackHID(this->device);
 }
 
 static DeviceProxy_Emulation *proxy;

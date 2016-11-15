@@ -1,5 +1,9 @@
 /*
- * This file is part of USBProxy.
+ * This file is not part of original USBProxy.
+ * This DeviceProxy doesn't actually do nothing. It doesn't communicate with a real device (like libUSB one).
+ * What we do is redirect all requests and packets to the Attack class, which knows how to parse them.
+ *
+ * Author: Skazza
  */
 
 #ifndef USBPROXY_DEVICEPROXYEMULATION_H
@@ -7,6 +11,7 @@
 
 #include "Criteria.h"
 #include "DeviceProxy.h"
+
 #include "Attack.h"
 #include "AttackHID.h"
 
@@ -36,6 +41,7 @@ public:
 	void release_interface(__u8 interface);
 
 	__u8 get_address();
+	void initAttack();
 	char* toString() {return (char*)"Emulated Device";}
 };
 

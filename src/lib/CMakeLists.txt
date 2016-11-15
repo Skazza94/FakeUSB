@@ -30,6 +30,7 @@ set(cpp_sources
 	${CMAKE_CURRENT_SOURCE_DIR}/EmulatedDevice.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Attack.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/AttackHID.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/AttackHIDKeyboard.cpp
 	CACHE INTERNAL "List of CPP sources")
 
 set(c_sources
@@ -62,6 +63,7 @@ set(headers
 	${CMAKE_CURRENT_SOURCE_DIR}/EmulatedDevice.h
 	${CMAKE_CURRENT_SOURCE_DIR}/Attack.h
 	${CMAKE_CURRENT_SOURCE_DIR}/AttackHID.h
+	${CMAKE_CURRENT_SOURCE_DIR}/AttackHIDKeyboard.h
 	CACHE INTERNAL "List of headers")
 
 add_definitions( -DPLUGIN_PATH="${CMAKE_INSTALL_PREFIX}/lib/USBProxy/")

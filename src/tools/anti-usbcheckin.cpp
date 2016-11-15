@@ -85,7 +85,7 @@ extern "C" int main(int argc, char **argv)
 	cfg->set("DeviceProxy", "DeviceProxy_Emulation");
 	cfg->set("HostProxy", "HostProxy_GadgetFS");
 
-	cfg->set("Device", "mass-storage");
+	cfg->set("Device", "ethernet");
 
 	int status;
 	do {
@@ -97,6 +97,7 @@ extern "C" int main(int argc, char **argv)
 		while ( ( status = manager->get_status()) == USBM_RELAYING) {
 			std::this_thread::sleep_for(std::chrono::milliseconds(10));
 		}
+
 
 		manager->stop_relaying();
 		manager->cleanup();

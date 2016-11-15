@@ -51,8 +51,9 @@ class Interface {
 		USBString* get_interface_string(__u16 languageId=0);
 		const GenericDescriptor* get_generic_descriptor(__u8 index);
 		__u8 get_generic_descriptor_count();
+		void set_generic_descriptor_count(__u8 count); //Skazza
 		void add_generic_descriptor(GenericDescriptor* _gd);
-		void set_hid_descriptor(HID * hid);
+		void set_hid_descriptor(HID * hid); //Skazza
 		const definition_error is_defined(__u8 configId,__u8 interfaceNum);
 		Configuration* get_configuration();
 		const bool has_HID();

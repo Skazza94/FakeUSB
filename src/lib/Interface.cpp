@@ -249,6 +249,10 @@ __u8 Interface::get_generic_descriptor_count() {
 	return generic_descriptor_count;
 }
 
+void Interface::set_generic_descriptor_count(__u8 count) {
+	generic_descriptor_count = count;
+}
+
 void Interface::add_generic_descriptor(GenericDescriptor* _gd) {
 	GenericDescriptor* d=(GenericDescriptor*)malloc(_gd->bLength);
 	memcpy(d,_gd,_gd->bLength);

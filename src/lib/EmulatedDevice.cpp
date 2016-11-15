@@ -27,17 +27,17 @@ EmulatedDevice::EmulatedDevice(DeviceProxy * proxy) {
 		strings = (USBString ***) calloc(maxStringIdx + 1, sizeof(*strings));
 
 		for(__u8 i = 0; i < descriptor.bNumConfigurations; i++) {
-			usb_config_descriptor configDescriptor;
-			fread(&configDescriptor, sizeof(configDescriptor), 1, configFileHandler);
+			usb_config_descriptor * configDescriptor = (usb_config_descriptor *) malloc(sizeof(usb_config_descriptor));
+			fread(configDescriptor, sizeof(*configDescriptor), 1, configFileHandler);
 
-			configurations[i] = new Configuration(this, &configDescriptor);
+			configurations[i] = new Configuration(this, configDescriptor);
 
 			/* Load each interface of the device */
 			for (__u8 j = 0; j < configurations[i]->get_descriptor()->bNumInterfaces; ++j) {
-				usb_interface_descriptor iFaceDesc;
-				fread(&iFaceDesc, sizeof(iFaceDesc), 1, configFileHandler);
+				usb_interface_descriptor * iFaceDesc = (usb_interface_descriptor *) malloc(sizeof(usb_interface_descriptor));
+				fread(iFaceDesc, sizeof(*iFaceDesc), 1, configFileHandler);
 
-				Interface * iface = new Interface(configurations[i], &iFaceDesc);
+				Interface * iface = new Interface(configurations[i], iFaceDesc);
 
 				__u8 hidDescCount = 0;
 				__u8 genericDescCount = 0;
@@ -53,74 +53,62 @@ EmulatedDevice::EmulatedDevice(DeviceProxy * proxy) {
 					iface->set_hid_descriptor(hid);
 				}
 
+				if(genericDescCount) iface->set_generic_descriptor_count(genericDescCount);
+
 				__u8 k;
 				for(k = 0; k < genericDescCount; ++k) {
-					GenericDescriptor genericDesc;
-					fread(&genericDesc, sizeof(genericDesc), 1, configFileHandler);
+					/* Read length */
+					__u8 length = 0;
+					fread(&length, sizeof(length), 1, configFileHandler);
 
-					iface->add_generic_descriptor(&genericDesc);
+					/* Read descriptor type */
+					__u8 descriptorType = 0;
+					fread(&descriptorType, sizeof(descriptorType), 1, configFileHandler);
+					/* Calculate real length */
+					__u8 realLength = length - (2 * sizeof(__u8));
+
+					GenericDescriptor * genericDesc = (GenericDescriptor *) calloc(realLength, 2);
+					genericDesc->bLength = length;
+					genericDesc->bDescriptorType = descriptorType;
+
+					fread(&genericDesc->bData, realLength, 1, configFileHandler);
+
+					iface->add_generic_descriptor(genericDesc);
 				}
 
 				for(k = 0; k < iface->get_descriptor()->bNumEndpoints; ++k) {
-					usb_endpoint_descriptor epDesc;
-					fread(&epDesc, USB_DT_ENDPOINT_SIZE, 1, configFileHandler);
+					usb_endpoint_descriptor * epDesc = (usb_endpoint_descriptor *) malloc(USB_DT_ENDPOINT_SIZE);
+					fread(epDesc, USB_DT_ENDPOINT_SIZE, 1, configFileHandler);
 
-					Endpoint * ep = new Endpoint(iface, &epDesc);
+					Endpoint * ep = new Endpoint(iface, epDesc);
 					iface->add_endpoint(ep);
 				}
 
 				configurations[i]->add_interface(iface);
 			}
-
-			deviceConfigurationIndex = 1;
-			deviceState = USB_STATE_CONFIGURED;
-
-			/* First string is language configuration */
-			USBString * setupString = new USBString(readStringDescriptorFromFile(configFileHandler), 0, 0);
-			add_string(setupString);
-
-			if (descriptor.iManufacturer)
-				this->addStringFromFile(configFileHandler, descriptor.iManufacturer);
-
-			if (descriptor.iProduct)
-				this->addStringFromFile(configFileHandler, descriptor.iProduct);
-
-			if (descriptor.iSerialNumber)
-				this->addStringFromFile(configFileHandler, descriptor.iSerialNumber);
-
-
-			//configurations[i]->print();
-
-			/*
-			__u8 iConfiguration=configurations[i]->get_descriptor()->iConfiguration;
-			if (iConfiguration) {add_string(iConfiguration);}
-			int j;
-			for (j=0;j<configurations[i]->get_descriptor()->bNumInterfaces;j++) {
-				int k;
-				for (k=0;k<configurations[i]->get_interface_alternate_count(j);k++) {
-
-					// modified 20140903 atsumi@aizulab.com
-					// begin
-					if ( configurations[i]->get_interface_alternate(j,k)) {
-						if ( configurations[i]->get_interface_alternate(j,k)->get_descriptor()) {
-							__u8 iInterface=configurations[i]->get_interface_alternate(j,k)->get_descriptor()->iInterface;
-							if (iInterface) {
-								add_string(iInterface);
-							}
-						}
-					}
-					// End
-				}
-			}*/
 		}
+
+		deviceConfigurationIndex = 1;
+		deviceState = USB_STATE_CONFIGURED;
+
+		/* First string is language configuration */
+		USBString * setupString = new USBString(readStringDescriptorFromFile(configFileHandler), 0, 0);
+		add_string(setupString);
+
+		if (descriptor.iManufacturer)
+			this->addStringFromFile(configFileHandler, descriptor.iManufacturer);
+
+		if (descriptor.iProduct)
+			this->addStringFromFile(configFileHandler, descriptor.iProduct);
+
+		if (descriptor.iSerialNumber)
+			this->addStringFromFile(configFileHandler, descriptor.iSerialNumber);
 
 		highspeed = false;
 		qualifier = NULL;
 
 		fclose(configFileHandler);
 	}
-
-	//fprintf(stderr, "Sto in EmulatedDevice!\n");
 }
 
 usb_string_descriptor * EmulatedDevice::readStringDescriptorFromFile(FILE * handler) {

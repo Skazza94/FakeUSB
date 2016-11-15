@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <sstream>
+#include <string.h>
 
 #include "Device.h"
 #include "DeviceProxy.h"

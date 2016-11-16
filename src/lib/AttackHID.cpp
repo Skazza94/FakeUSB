@@ -1,6 +1,7 @@
- /*
- * Sub-class of Attack. Adds few specific descriptor type fields + callbacks for HIDs.
- * We also have a string that stores the device type which we're emulating. This is used in sub-classes.
+/*
+ * This file is not part of original USBProxy.
+ * Sub-class of Attack. 
+ * Adds few specific descriptor type fields + callbacks for HIDs.
  *
  * Author: dibbidouble & Skazza
  */
@@ -17,8 +18,9 @@ AttackHID::AttackHID() : Attack() {
 
 AttackHID::~AttackHID() {}
 
+/* ~~ Setup Request Callbacks ~~ */
 __u8 AttackHID::getHIDReportDescriptor(const usb_ctrlrequest packet, __u8 * dataPtr) {
-	std::ostringstream deviceHIDReport; deviceHIDReport << "/home/debian/AntiUSBProxy/config/HIDReport/" << this->deviceType << "HIDReport";
+	std::ostringstream deviceHIDReport; deviceHIDReport << "/home/debian/AntiUSBProxy/config/HIDReport/" << this->device->getDeviceProxy()->cfg->get("Device") << "HIDReport";
 
 	FILE * hidReportFileHandler = fopen(deviceHIDReport.str().c_str(), "rb");
 

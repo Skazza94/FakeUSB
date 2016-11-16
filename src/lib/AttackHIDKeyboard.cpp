@@ -1,4 +1,5 @@
- /*
+/*
+ * This file is not part of original USBProxy.
  * Sub-class of AttackHID.
  * Handles a keyboard emulation, making fake packets and sending them to the host! :P
  *
@@ -7,10 +8,9 @@
 
 #include "AttackHIDKeyboard.h"
 
-AttackHIDKeyboard::AttackHIDKeyboard() : AttackHID() {
-	this->deviceType = "keyboard";
-}
+AttackHIDKeyboard::AttackHIDKeyboard() : AttackHID() {}
 
 AttackHIDKeyboard::~AttackHIDKeyboard() {}
 
-const bool hasRegistered = AttackFactory::registerClass("keyboard", &AttackHIDKeyboard::createInstance);
+/* Autoregisters the class into the AttackFactory */
+const bool hasRegistered = AttackFactory::getInstance()->registerClass("keyboard", &AttackHIDKeyboard::createInstance);

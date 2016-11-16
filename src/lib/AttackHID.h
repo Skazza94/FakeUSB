@@ -20,7 +20,7 @@ protected:
 	__u8 getHIDReportDescriptor(const usb_ctrlrequest, __u8 *);
 
 public:
-	AttackHID(Device *);
+	AttackHID();
 	~AttackHID();
 };
 

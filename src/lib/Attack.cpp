@@ -8,7 +8,7 @@
 
 #include "Attack.h"
 
-Attack::Attack(Device * device) {
+Attack::Attack() {
 	this->device = device;
 	
 	this->setupType2Callback.insert(
@@ -34,7 +34,7 @@ int Attack::parseSetupRequest(const usb_ctrlrequest setupPacket, int * nBytes, _
 __u8 Attack::getStringDescriptor(const usb_ctrlrequest packet, __u8 * dataPtr) {
 	__u8 descIndex = packet.wValue & 0xFF;
 
-	const usb_string_descriptor * stringDescriptor = this->device->getString(descIndex, packet.wIndex)->get_descriptor();
+	const usb_string_descriptor * stringDescriptor = this->device->get_string(descIndex, packet.wIndex)->get_descriptor();
 	memcpy(dataPtr, stringDescriptor, stringDescriptor->bLength);
 
 	return stringDescriptor->bLength;

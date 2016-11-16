@@ -7,8 +7,10 @@
 
 #include "AttackHIDKeyboard.h"
 
-AttackHIDKeyboard::AttackHIDKeyboard(Device * device) : AttackHID(device) {
+AttackHIDKeyboard::AttackHIDKeyboard() : AttackHID() {
 	this->deviceType = "keyboard";
 }
 
 AttackHIDKeyboard::~AttackHIDKeyboard() {}
+
+const bool hasRegistered = AttackFactory::registerClass("keyboard", &AttackHIDKeyboard::createInstance);

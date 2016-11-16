@@ -12,7 +12,8 @@
 
 class AttackHIDKeyboard : public AttackHID {
 public:
-	AttackHIDKeyboard(Device *);
+	static Attack * createInstance() { return new AttackHIDKeyboard(); }
+	AttackHIDKeyboard();
 	~AttackHIDKeyboard();
 };
 

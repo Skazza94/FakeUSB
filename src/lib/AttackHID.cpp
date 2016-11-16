@@ -7,7 +7,7 @@
 
 #include "AttackHID.h"
 
-AttackHID::AttackHID(Device * device) : Attack(device) {
+AttackHID::AttackHID() : Attack() {
 	this->setupType2Callback.insert(
 		std::pair<__u8, std::function<__u8(const usb_ctrlrequest, __u8 *)>>(
 			0x22, std::bind(&AttackHID::getHIDReportDescriptor, this, std::placeholders::_1, std::placeholders::_2)
@@ -18,7 +18,7 @@ AttackHID::AttackHID(Device * device) : Attack(device) {
 AttackHID::~AttackHID() {}
 
 __u8 AttackHID::getHIDReportDescriptor(const usb_ctrlrequest packet, __u8 * dataPtr) {
-	std::ostringstream deviceHIDReport; deviceHIDReport << "/home/debian/AntiUSBProxy/config/HIDReport/" << this->device_type << "HIDReport";
+	std::ostringstream deviceHIDReport; deviceHIDReport << "/home/debian/AntiUSBProxy/config/HIDReport/" << this->deviceType << "HIDReport";
 
 	FILE * hidReportFileHandler = fopen(deviceHIDReport.str().c_str(), "rb");
 

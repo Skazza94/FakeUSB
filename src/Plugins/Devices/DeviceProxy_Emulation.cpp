@@ -86,7 +86,8 @@ __u8 DeviceProxy_Emulation::get_address() {
 
 /* We use a method because we load the Attack class to use from the config file. */
 void DeviceProxy_Emulation::initAttack() {
-	this->attack = new AttackHID(this->device);
+	this->attack = AttackFactory::createInstance("keyboard");
+	this->attack->setDevice(device);
 }
 
 static DeviceProxy_Emulation *proxy;

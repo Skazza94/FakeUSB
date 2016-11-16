@@ -28,6 +28,7 @@ set(cpp_sources
 	${CMAKE_CURRENT_SOURCE_DIR}/RelayWriter.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/USBString.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/EmulatedDevice.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/AttackFactory.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Attack.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/AttackHID.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/AttackHIDKeyboard.cpp
@@ -61,6 +62,8 @@ set(headers
 	${CMAKE_CURRENT_SOURCE_DIR}/Proxy.h
 	${CMAKE_CURRENT_SOURCE_DIR}/USBString.h
 	${CMAKE_CURRENT_SOURCE_DIR}/EmulatedDevice.h
+	${CMAKE_CURRENT_SOURCE_DIR}/Singleton.h
+	${CMAKE_CURRENT_SOURCE_DIR}/AttackFactory.h
 	${CMAKE_CURRENT_SOURCE_DIR}/Attack.h
 	${CMAKE_CURRENT_SOURCE_DIR}/AttackHID.h
 	${CMAKE_CURRENT_SOURCE_DIR}/AttackHIDKeyboard.h

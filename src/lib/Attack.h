@@ -16,6 +16,7 @@
 
 #include "Device.h"
 #include "USBString.h"
+#include "AttackFactory.h"
 
 class Attack {
 protected:
@@ -25,9 +26,10 @@ protected:
 	__u8 getStringDescriptor(const usb_ctrlrequest, __u8 *);
 
 public:
-	Attack(Device *);
+	Attack();
 	~Attack();
 	int parseSetupRequest(const usb_ctrlrequest, int *, __u8 *);
+	void setDevice(Device * device) { this->device = device; }
 };
 
 #endif /* USBPROXY_ATTACK_H */

@@ -21,7 +21,7 @@
 #include "ConfigParser.h"
 #include "version.h"
 
-static unsigned debug=0;
+static unsigned debug = 0;
 
 Manager* manager;
 
@@ -89,8 +89,8 @@ extern "C" int main(int argc, char **argv)
 
 	int status;
 	do {
-		manager=new Manager(debug);
-		manager->load_plugins(cfg);
+		manager=new Manager(cfg);
+		manager->load_plugins();
 		cfg->print_config();
 
 		manager->start_control_relaying();

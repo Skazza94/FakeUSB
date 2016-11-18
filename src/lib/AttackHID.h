@@ -9,19 +9,21 @@
 #ifndef USBPROXY_ATTACKHID_H
 #define USBPROXY_ATTACKHID_H
 
-#include <sstream>
 #include <string>
 
 #include "Attack.h"
+#include "DeviceProxy.h"
+#include "ConfigParser.h"
 
 class AttackHID : public Attack {
 protected:
+	AttackHID(__u32);
+
 	/* ~~ Setup Request Callbacks ~~ */
 	__u8 getHIDReportDescriptor(const usb_ctrlrequest, __u8 *);
 
 public:
-	AttackHID();
-	~AttackHID();
+	virtual ~AttackHID();
 };
 
 #endif /* USBPROXY_ATTACKHID_H */

@@ -16,20 +16,32 @@
 #include <string>
 #include <map>
 
-#include "Singleton.h"
-
-/* Defines the "creator" function pointer type */
-template<typename T>
-	typedef T * (*ctor)();
+#include "Singleton.hpp"
 
 template<typename T>
-	class Factory : public Singleton<Factory> {
-	private:
-		std::map<std::string, ctor> registeredClasses = {};
+	class Factory : public Singleton<Factory<T>> {
+	protected:
+		std::map<std::string, T * (*)()> * registeredClasses = NULL;
 
 	public:
-		bool registerClass(const std::string &name, ctor createMethod);
-		T * createInstance(const std::string &name);
+		Factory() {
+			this->registeredClasses = new std::map<std::string, T * (*)()>;
+		}
+
+		bool registerClass(const std::string &name, T * (*createMethod)()) {
+			this->registeredClasses->insert(std::pair<std::string, T * (*)()>(name, createMethod));
+
+			return true;
+		}
+
+		T * createInstance(const std::string &name) {
+			auto it = this->registeredClasses->find(name);
+
+			if(it != this->registeredClasses->end())
+				return (*it).second();
+
+			return NULL;
+		}
 	};
 
 #endif /* USBPROXY_FACTORY_H */

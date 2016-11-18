@@ -9,16 +9,17 @@
 #ifndef USBPROXY_DEVICEPROXYEMULATION_H
 #define USBPROXY_DEVICEPROXYEMULATION_H
 
+#include <string.h>
+#include <list>
+
 #include "Criteria.h"
 #include "DeviceProxy.h"
-
-#include "Attack.h"
-#include "AttackHID.h"
 
 class DeviceProxy_Emulation: public DeviceProxy {
 private:
 	bool connected = false;
-	Attack* attack = NULL;
+	std::map<__u8, std::list<__u8 *> *> * endPoint2packetBuffer;
+
 public:
 	DeviceProxy_Emulation(ConfigParser *);
 	~DeviceProxy_Emulation();
@@ -41,7 +42,6 @@ public:
 	void release_interface(__u8 interface);
 
 	__u8 get_address();
-	void initAttack();
 	char* toString() {return (char*)"Emulated Device";}
 };
 

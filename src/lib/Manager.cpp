@@ -30,9 +30,9 @@
 
 using namespace std;
 
-Manager::Manager(unsigned debug_level)
-	: _debug_level(debug_level)
-{
+Manager::Manager(ConfigParser * _cfg) {
+	_debug_level = _cfg->debugLevel;
+	cfg = _cfg;
 	status=USBM_IDLE;
 	plugin_manager = new PluginManager();
 	deviceProxy=NULL;
@@ -113,9 +113,12 @@ Manager::~Manager() {
 		free(injectors);
 		injectors=NULL;
 	}
+
+	if(attack)
+		delete(attack);
 }
 
-void Manager::load_plugins(ConfigParser *cfg) {
+void Manager::load_plugins() {
 	plugin_manager->load_plugins(cfg);
 	deviceProxy = plugin_manager->device_proxy;
 	hostProxy = plugin_manager->host_proxy;
@@ -234,8 +237,13 @@ void Manager::start_control_relaying(){
 	device = new EmulatedDevice(deviceProxy);
 	//device->print(0);
 
+	this->initAttack();
+
 	//connect device proxy
 	int rc = deviceProxy->connect();
+
+	this->deviceProxy->setAttack(attack);
+	this->attack->setDeviceProxy(deviceProxy);
 
 	// modified 20141007 atsumi@aizulab.com
   // I think interfaces are claimed soon after connecting device.
@@ -276,6 +284,8 @@ void Manager::start_control_relaying(){
 		return;
 	}
 
+	this->attack->setHostProxy(hostProxy);
+
 	if (out_readers[0]) {
 		out_readerThreads[0] = std::thread(&RelayReader::relay_read, out_readers[0]);
 	}
@@ -284,6 +294,7 @@ void Manager::start_control_relaying(){
 		out_writerThreads[0] = std::thread(&RelayWriter::relay_write, out_writers[0]);
 	}
 	if (status!=USBM_SETUP) {stop_relaying();return;}
+
 	status=USBM_RELAYING;
 }
 
@@ -364,6 +375,8 @@ void Manager::start_data_relaying() {
 			out_writerThreads[i] = std::thread(&RelayWriter::relay_write, out_writers[i]);
 		}
 	}
+
+	this->attack->startAttack();
 }
 
 void Manager::stop_relaying(){
@@ -483,4 +496,10 @@ void Manager::cleanup() {
 	deviceProxy = NULL;
 	delete hostProxy;
 	hostProxy = NULL;
+}
+
+/* We use a method because we load the Attack class to use from the config file. */
+void Manager::initAttack() {
+	this->attack = AttackFactory::getInstance()->createInstance(this->cfg->get("Device"));
+	this->attack->setDevice(device);
 }

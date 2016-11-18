@@ -9,10 +9,14 @@
 #define USBPROXY_ATTACKFACTORY_H
 
 #include "Attack.h"
-#include "Factory.h"
+#include "Factory.hpp"
 
 class Attack;
 
-class AttackFactory : public Factory<Attack> {};
+class AttackFactory : public Factory<Attack> {
+	public:
+		AttackFactory() : Factory() {}
+		~AttackFactory() {}
+};
 
 #endif /* USBPROXY_ATTACKFACTORY_H */

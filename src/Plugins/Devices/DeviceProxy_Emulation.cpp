@@ -8,21 +8,26 @@
 
 #include "DeviceProxy_Emulation.h"
 
+#include "HexString.h"
+#include <chrono>
+#include <thread>
+
 DeviceProxy_Emulation::DeviceProxy_Emulation(ConfigParser * cfg) {
 	this->cfg = cfg;
+	this->endPoint2packetBuffer = new std::map<__u8, std::list<__u8 *> *>;
 }
 
-DeviceProxy_Emulation::~DeviceProxy_Emulation() {}
+DeviceProxy_Emulation::~DeviceProxy_Emulation() {
+	delete(this->endPoint2packetBuffer);
+}
 
 int DeviceProxy_Emulation::connect() {
 	connected = true;
-	this->initAttack();
 	return 0;
 }
 
 int DeviceProxy_Emulation::connect(int timeout) {
 	connected = true;
-	this->initAttack();
 	return 0;
 }
 
@@ -56,8 +61,31 @@ void DeviceProxy_Emulation::receive_data(__u8 endpoint,__u8 attributes,__u16 max
 }
 
 void DeviceProxy_Emulation::receive_data(__u8 endpoint,__u8 attributes,__u16 maxPacketSize,__u8** dataptr, int* length,int timeout) {
-	/* Need an "AttackParser" to know what to do with received data? */
 	*length = 0;
+
+	if(!this->attack->canStartAttack())
+		return;
+
+	std::map<__u8, std::list<__u8 *> *>::iterator it = this->endPoint2packetBuffer->find(endpoint);
+	std::list<__u8 *> * packetBuffer = (it != this->endPoint2packetBuffer->end()) ? (*it).second : new std::list<__u8 *>;
+
+	if(packetBuffer->empty())
+		packetBuffer = this->attack->getNextPayload(endpoint, maxPacketSize);
+
+
+	if(!packetBuffer->empty()) {
+		__u8 * dataArray = packetBuffer->front();
+		packetBuffer->pop_front();
+
+		memcpy(&(*dataptr), &dataArray, maxPacketSize);
+
+		*length = maxPacketSize;
+	}
+
+	if(it != this->endPoint2packetBuffer->end())
+		it->second = packetBuffer;
+	else
+		this->endPoint2packetBuffer->insert(std::pair<__u8, std::list<__u8 *> *>(endpoint, packetBuffer));
 }
 
 void DeviceProxy_Emulation::setConfig(Configuration* fs_cfg,Configuration* hs_cfg,bool hs) {
@@ -82,12 +110,6 @@ void DeviceProxy_Emulation::release_interface(__u8 interface) {
 
 __u8 DeviceProxy_Emulation::get_address() {
 	return 0;
-}
-
-/* We use a method because we load the Attack class to use from the config file. */
-void DeviceProxy_Emulation::initAttack() {
-	this->attack = AttackFactory::getInstance()->createInstance(this->cfg->get("Device"));
-	this->attack->setDevice(device);
 }
 
 static DeviceProxy_Emulation *proxy;

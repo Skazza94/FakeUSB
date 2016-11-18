@@ -11,6 +11,7 @@
 #include <linux/usb/ch9.h>
 
 #include "Packet.h"
+#include "Attack.h"
 
 class PluginManager;
 class ConfigParser;
@@ -44,6 +45,8 @@ private:
 	HostProxy* hostProxy;
 	PluginManager *plugin_manager;
 	EmulatedDevice* device;
+	Attack * attack = NULL;
+	ConfigParser * cfg = NULL;
 
 	PacketFilter** filters;
 	__u8 filterCount;
@@ -73,10 +76,10 @@ private:
 	unsigned _debug_level;
 
 public:
-	Manager(unsigned debug_level);
+	Manager(ConfigParser *);
 	virtual ~Manager();
 
-	void load_plugins(ConfigParser *cfg);
+	void load_plugins();
 
 	void add_injector(Injector* _injector);
 	void remove_injector(__u8 index,bool freeMemory=true);
@@ -98,6 +101,8 @@ public:
 	void start_control_relaying();
 	void stop_relaying();
 	void cleanup();
+
+	void initAttack();
 };
 
 #endif /* USBPROXY_MANAGER_H */

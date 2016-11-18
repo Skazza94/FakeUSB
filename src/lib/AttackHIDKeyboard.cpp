@@ -8,7 +8,7 @@
 
 #include "AttackHIDKeyboard.h"
 
-AttackHIDKeyboard::AttackHIDKeyboard() : AttackHID() {}
+AttackHIDKeyboard::AttackHIDKeyboard() : AttackHID(4) {}
 
 AttackHIDKeyboard::~AttackHIDKeyboard() {}
 

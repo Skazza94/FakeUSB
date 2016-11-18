@@ -11,6 +11,7 @@
 
 #include <string>
 #include <regex>
+#include <algorithm>
 
 #include "Attack.h"
 #include "DeviceProxy.h"

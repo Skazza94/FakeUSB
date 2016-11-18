@@ -23,11 +23,14 @@ AttackHID::~AttackHID() {
 }
 
 std::pair<std::string, std::string> * AttackHID::parseCommand(std::string command) {
-	std::regex commandRegex("^([A-Z]+) (.*)$", std::regex_constants::icase | std::regex::extended);
+	std::regex commandRegex("^([A-Za-z_]+) (.*)$", std::regex_constants::icase | std::regex::extended);
 	std::smatch matches; std::regex_search(command, matches, commandRegex);
 
-	if(!matches[1].str().empty() && !matches[2].str().empty())
-		return new std::pair<std::string, std::string>(matches[1].str(), matches[2].str());
+	if(!matches[1].str().empty() && !matches[2].str().empty()) {
+		std::string extractedCmd = matches[1].str();
+		std::transform(extractedCmd.begin(), extractedCmd.end(), extractedCmd.begin(), ::toupper);
+		return new std::pair<std::string, std::string>(extractedCmd, matches[2].str());
+	}
 
 	return NULL;
 }

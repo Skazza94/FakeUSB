@@ -17,12 +17,9 @@ Attack::Attack(__u32 _delayTimer) {
 	);
 
 	DELAY_TIMER = _delayTimer * 1000000;
-	this->attackCommands = new std::list<std::string>;
 }
 
-Attack::~Attack() {
-	delete(this->attackCommands);
-}
+Attack::~Attack() {}
 
 int Attack::parseSetupRequest(const usb_ctrlrequest setupPacket, int * nBytes, __u8 * dataPtr) {
 	__u8 descType = setupPacket.wValue >> 8;
@@ -37,46 +34,6 @@ int Attack::parseSetupRequest(const usb_ctrlrequest setupPacket, int * nBytes, _
 		*nBytes = (*itRequest).second(setupPacket, dataPtr);
 
 	return 0;
-}
-
-std::pair<std::string, std::string> * Attack::parseCommand(std::string command) {
-	std::regex commandRegex("^([A-Z]+) (.*)$", std::regex_constants::icase | std::regex::extended);
-	std::smatch matches; std::regex_search(command, matches, commandRegex);
-
-	if(!matches[1].str().empty() && !matches[2].str().empty())
-		return new std::pair<std::string, std::string>(matches[1].str(), matches[2].str());
-
-	return NULL;
-}
-
-void Attack::loadAttack() {
-	this->attackCommands->push_back("WRITE \"hello world\"");
-}
-
-std::list<__u8 *> * Attack::getNextPayload(__u8 endpoint, __u16 maxPacketSize) {
-	if(endpoint == 0x81) {
-		if(!this->attackCommands->empty()) {
-			std::string commandString = this->attackCommands->front();
-			this->attackCommands->pop_front();
-
-			fprintf(stderr, "Command: %s\n", commandString.c_str());
-
-			std::pair<std::string, std::string> * commandAndParams = this->parseCommand(commandString);
-
-			if(commandAndParams) {
-				Command * command = CommandFactory::getInstance()->createInstance(commandAndParams->first);
-				std::list<__u8 *> * payload = new std::list<__u8 *>;
-
-				if(command) payload = command->execute(commandAndParams->second, maxPacketSize);
-
-				delete(commandAndParams);
-
-				return payload;
-			}
-		}
-	}
-
-	return new std::list<__u8 *>;
 }
 
 void Attack::startAttack() {

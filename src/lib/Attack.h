@@ -13,12 +13,10 @@
 #include <map>
 #include <list>
 #include <functional>
-#include <regex>
 #include <string.h>
 #include <linux/usb/ch9.h>
 
 #include "AttackFactory.hpp"
-#include "Command.h"
 #include "Device.h"
 #include "USBString.h"
 #include "DeviceProxy.h" //TODO: Useless references
@@ -39,10 +37,9 @@ protected:
 	 */
 	__u32 DELAY_TIMER = 0;
 
-	std::list<std::string> * attackCommands;
-	std::map<__u8, std::function<__u8(const usb_ctrlrequest, __u8 *)>> setupType2Callback;
+	virtual void loadAttack() = 0;
 
-	std::pair<std::string, std::string> * parseCommand(std::string);
+	std::map<__u8, std::function<__u8(const usb_ctrlrequest, __u8 *)>> setupType2Callback;
 
 	/* ~~ Setup Request Callbacks ~~ */
 	__u8 getStringDescriptor(const usb_ctrlrequest, __u8 *);
@@ -55,8 +52,7 @@ public:
 	void setDeviceProxy(DeviceProxy * deviceProxy) { this->deviceProxy = deviceProxy; }
 	void setHostProxy(HostProxy * hostProxy) { this->hostProxy = hostProxy; }
 
-	void loadAttack();
-	std::list<__u8 *> * getNextPayload(__u8, __u16);
+	virtual std::list<__u8 *> * getNextPayload(__u8, __u16) = 0;
 
 	void startAttack();
 	bool canStartAttack() { if(DELAY_TIMER) DELAY_TIMER--; return this->canAttack && (DELAY_TIMER == 0); }

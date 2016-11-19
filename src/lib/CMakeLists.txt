@@ -33,6 +33,8 @@ set(cpp_sources
 	${CMAKE_CURRENT_SOURCE_DIR}/AttackHIDKeyboard.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Command.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/CommandWrite.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/CommandPresskeys.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/CommandDelay.cpp
 	CACHE INTERNAL "List of CPP sources")
 
 set(c_sources
@@ -72,6 +74,8 @@ set(headers
 	${CMAKE_CURRENT_SOURCE_DIR}/AttackHIDKeyboard.h
 	${CMAKE_CURRENT_SOURCE_DIR}/Command.h
 	${CMAKE_CURRENT_SOURCE_DIR}/CommandWrite.h
+	${CMAKE_CURRENT_SOURCE_DIR}/CommandPresskeys.h
+	${CMAKE_CURRENT_SOURCE_DIR}/CommandDelay.h
 	CACHE INTERNAL "List of headers")
 
 add_definitions( -DPLUGIN_PATH="${CMAKE_INSTALL_PREFIX}/lib/USBProxy/")

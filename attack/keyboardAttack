@@ -1,0 +1,6 @@
+WRITE "hello world"
+WRITE "prova due"
+WRITE "echo 'come sei bella roma quando e sera'"
+DELAY "10000"
+PRESSKEYS "f1"
+PRESSKEYS "ctrl+alt+t"

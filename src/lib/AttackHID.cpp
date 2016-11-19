@@ -10,9 +10,9 @@
 
 AttackHID::AttackHID(__u32 _delayTimer) : Attack(_delayTimer) {
 	this->setupType2Callback.insert(
-		std::pair<__u8, std::function<__u8(const usb_ctrlrequest, __u8 *)>>(
-			0x22, std::bind(&AttackHID::getHIDReportDescriptor, this, std::placeholders::_1, std::placeholders::_2)
-		)
+			std::pair<__u8, std::function<__u8(const usb_ctrlrequest, __u8 *)>>(
+					0x22, std::bind(&AttackHID::getHIDReportDescriptor, this, std::placeholders::_1, std::placeholders::_2)
+			)
 	);
 
 	this->attackCommands = new std::list<std::string>;
@@ -64,7 +64,19 @@ std::list<__u8 *> * AttackHID::getNextPayload(__u8 endpoint, __u16 maxPacketSize
 void AttackHID::loadAttack() {
 	/* TODO: Load some endpoints criteria in some way... */
 
-	this->attackCommands->push_back("WRITE \"hello world\"");
+	std::ostringstream deviceAttack;
+	deviceAttack << "/home/debian/AntiUSBProxy/attack/" << this->deviceProxy->cfg->get("Device") << "Attack";
+
+	std::ifstream attackFile(deviceAttack.str().c_str(),std::ios::in);
+	if (attackFile.good()) {
+		while (!attackFile.eof()) {
+			std::string line;
+			std::getline(attackFile, line);
+			this->attackCommands->push_back(line);
+		}
+	}
+
+	attackFile.close();
 }
 
 /* ~~ Setup Request Callbacks ~~ */

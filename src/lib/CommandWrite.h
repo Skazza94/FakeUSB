@@ -48,7 +48,8 @@ private:
 		{'7', 0x24},
 		{'8', 0x25},
 		{'9', 0x26},
-		{'0', 0x27}
+		{'0', 0x27},
+		{' ', 0x2c}
 	};
 
 	std::list<__u8 *> * preparePayLoad(std::string, __u16);

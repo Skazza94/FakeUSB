@@ -51,7 +51,10 @@ std::list<__u8 *> * AttackHID::getNextPayload(__u8 endpoint, __u16 maxPacketSize
 				Command * command = CommandFactory::getInstance()->createInstance(commandAndParams->first);
 				std::list<__u8 *> * payload = new std::list<__u8 *>;
 
-				if(command) payload = command->execute(commandAndParams->second, maxPacketSize);
+				if(command) {
+					payload = command->execute(commandAndParams->second, maxPacketSize);
+					delete(command);
+				}
 
 				delete(commandAndParams);
 

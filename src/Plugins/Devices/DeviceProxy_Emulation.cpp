@@ -52,11 +52,10 @@ int DeviceProxy_Emulation::control_request(const usb_ctrlrequest *setup_packet, 
 }
 
 void DeviceProxy_Emulation::send_data(__u8 endpoint,__u8 attributes,__u16 maxPacketSize,__u8* dataptr,int length) {
-
+	/* Need an "AttackParser" to know what to do with received data? */
 }
 
 void DeviceProxy_Emulation::receive_data(__u8 endpoint,__u8 attributes,__u16 maxPacketSize,__u8** dataptr, int* length) {
-	/* Need an "AttackParser" to know what to do with received data? */
 	*length = 0;
 }
 
@@ -71,7 +70,6 @@ void DeviceProxy_Emulation::receive_data(__u8 endpoint,__u8 attributes,__u16 max
 
 	if(packetBuffer->empty())
 		packetBuffer = this->attack->getNextPayload(endpoint, maxPacketSize);
-
 
 	if(!packetBuffer->empty()) {
 		__u8 * dataArray = packetBuffer->front();

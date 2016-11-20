@@ -45,7 +45,12 @@ std::vector<std::string> * CommandPressKeys::parseParams(const std::string &para
 		 tokenizer = tokenizer.substr(matches[0].str().length());
 	}
 
-	return (!paramVector->empty()) ? paramVector : NULL;
+	if(!paramVector->empty())
+		return paramVector;
+	else {
+		delete(paramVector);
+		return NULL;
+	}
 }
 
 std::list<__u8 *> * CommandPressKeys::execute(const std::string &paramString, __u16 maxPacketSize) {

@@ -22,8 +22,8 @@ protected:
 public:
 	virtual ~Command();
 
-	virtual std::vector<std::string> * parseParams(std::string) = 0;
-	virtual std::list<__u8 *> * execute(std::string, __u16) = 0;
+	virtual std::vector<std::string> * parseParams(const std::string &) = 0;
+	virtual std::list<__u8 *> * execute(const std::string &, __u16) = 0;
 };
 
 #endif /* SRC_LIB_COMMAND_H_ */

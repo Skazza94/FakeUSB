@@ -18,8 +18,8 @@ public:
 	CommandDelay();
 	~CommandDelay();
 
-	std::vector<std::string> * parseParams(std::string);
-	std::list<__u8 *> * execute(std::string, __u16);
+	std::vector<std::string> * parseParams(const std::string &);
+	std::list<__u8 *> * execute(const std::string &, __u16);
 
 	/* "Creator" method used by the Factory */
 	static Command * createInstance() { return new CommandDelay(); }

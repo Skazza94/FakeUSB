@@ -66,11 +66,19 @@ extern "C" int main(int argc, char **argv)
 	
 	ConfigParser *cfg = new ConfigParser();
 
-	while ((opt = getopt (argc, argv, "v:p:P:D:H:dsc:C:lmik::w:hx")) != EOF) {
+	while ((opt = getopt (argc, argv, "va:d:")) != EOF) {
 		switch (opt) {
-		case 'd':		/* verbose */
-			debug++;
-			cfg->debugLevel = debug;
+			case 'v':
+				debug++;
+				cfg->debugLevel = debug;
+			break;
+
+			case 'a':
+				cfg->set("AttackFile", std::string(optarg));
+			break;
+
+			case 'd':
+				cfg->set("Device", std::string(optarg));
 			break;
 		}
 	}
@@ -84,8 +92,6 @@ extern "C" int main(int argc, char **argv)
 
 	cfg->set("DeviceProxy", "DeviceProxy_Emulation");
 	cfg->set("HostProxy", "HostProxy_GadgetFS");
-
-	cfg->set("Device", "keyboard");
 
 	int status;
 	do {

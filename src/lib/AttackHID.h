@@ -24,7 +24,7 @@ protected:
 	AttackHID(__u32);
 
 	std::list<std::string> * attackCommands;
-	std::pair<std::string, std::string> * parseCommand(std::string);
+	std::pair<std::string, std::string> * parseCommand(const std::string &);
 	void loadAttack();
 
 	/* ~~ Setup Request Callbacks ~~ */

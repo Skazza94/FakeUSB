@@ -30,8 +30,8 @@ std::list<__u8 *> * CommandWrite::preparePayLoad(std::string stringToWrite, __u1
 }
 
 
-std::vector<std::string> * CommandWrite::parseParams(std::string paramString) {
-	std::regex paramRegex("\"(.*)\"", std::regex_constants::icase | std::regex::extended);
+std::vector<std::string> * CommandWrite::parseParams(const std::string &paramString) {
+	std::regex paramRegex("^\"(.*)\"$", std::regex_constants::icase);
 	std::smatch matches; std::regex_search(paramString, matches, paramRegex);
 
 	if(!matches[1].str().empty()) {
@@ -44,7 +44,7 @@ std::vector<std::string> * CommandWrite::parseParams(std::string paramString) {
 	return NULL;
 }
 
-std::list<__u8 *> * CommandWrite::execute(std::string paramString, __u16 maxPacketSize) {
+std::list<__u8 *> * CommandWrite::execute(const std::string &paramString, __u16 maxPacketSize) {
 	std::vector<std::string> * paramList = this->parseParams(paramString);
 
 	if(paramList) {

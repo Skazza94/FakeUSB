@@ -22,14 +22,16 @@ AttackHID::~AttackHID() {
 	delete(this->attackCommands);
 }
 
-std::pair<std::string, std::string> * AttackHID::parseCommand(std::string command) {
-	std::regex commandRegex("^([A-Za-z_]+) (.*)$", std::regex_constants::icase | std::regex::extended);
+std::pair<std::string, std::string> * AttackHID::parseCommand(const std::string &command) {
+	std::regex commandRegex("^([A-Za-z_]+)(\\s)+(.*)$", std::regex_constants::icase);
 	std::smatch matches; std::regex_search(command, matches, commandRegex);
 
-	if(!matches[1].str().empty() && !matches[2].str().empty()) {
-		std::string extractedCmd = matches[1].str();
-		std::transform(extractedCmd.begin(), extractedCmd.end(), extractedCmd.begin(), ::toupper);
-		return new std::pair<std::string, std::string>(extractedCmd, matches[2].str());
+	std::string commandName = matches[1].str();
+	std::string commandParams = matches[3].str();
+
+	if(!commandName.empty() && !commandParams.empty()) {
+		std::transform(commandName.begin(), commandName.end(), commandName.begin(), ::toupper);
+		return new std::pair<std::string, std::string>(commandName, commandParams);
 	}
 
 	return NULL;
@@ -63,14 +65,11 @@ std::list<__u8 *> * AttackHID::getNextPayload(__u8 endpoint, __u16 maxPacketSize
 
 void AttackHID::loadAttack() {
 	/* TODO: Load some endpoints criteria in some way... */
+	std::ifstream attackFile(this->deviceProxy->cfg->get("AttackFile"), std::ios::in);
+	std::string line;
 
-	std::ostringstream deviceAttack;
-	deviceAttack << "/home/debian/AntiUSBProxy/attack/" << this->deviceProxy->cfg->get("Device") << "Attack";
-
-	std::ifstream attackFile(deviceAttack.str().c_str(),std::ios::in);
 	if (attackFile.good()) {
 		while (!attackFile.eof()) {
-			std::string line;
 			std::getline(attackFile, line);
 			this->attackCommands->push_back(line);
 		}

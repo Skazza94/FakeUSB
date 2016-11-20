@@ -11,13 +11,13 @@ CommandDelay::CommandDelay() : Command() {}
 
 CommandDelay::~CommandDelay() {}
 
-std::vector<std::string> * CommandDelay::parseParams(std::string paramString) {
-	std::regex paramRegex("\"(.*)\"", std::regex_constants::icase | std::regex::extended);
+std::vector<std::string> * CommandDelay::parseParams(const std::string &paramString) {
+	std::regex paramRegex("^(\\d)+$", std::regex_constants::icase);
 	std::smatch matches; std::regex_search(paramString, matches, paramRegex);
 
-	if(!matches[1].str().empty()) {
+	if(!matches[0].str().empty()) {
 		std::vector<std::string> * paramVector = new std::vector<std::string>;
-		paramVector->push_back(matches[1].str());
+		paramVector->push_back(matches[0].str());
 
 		return paramVector;
 	}
@@ -25,11 +25,12 @@ std::vector<std::string> * CommandDelay::parseParams(std::string paramString) {
 	return NULL;
 }
 
-std::list<__u8 *> * CommandDelay::execute(std::string paramString, __u16 maxPacketSize) {
+std::list<__u8 *> * CommandDelay::execute(const std::string &paramString, __u16 maxPacketSize) {
 	std::vector<std::string> * paramList = this->parseParams(paramString);
 
 	if (paramList) {
-		int delay = stoi(paramList->at(0), nullptr, 10);
+		int delay = stoi(paramList->at(0));
+
 		std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 	}
 

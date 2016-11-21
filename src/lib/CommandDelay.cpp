@@ -30,7 +30,7 @@ std::list<__u8 *> * CommandDelay::execute(const std::string &paramString, __u16 
 	std::vector<std::string> * paramList = this->parseParams(paramString);
 
 	if (paramList) {
-		int delay = stoi(paramList->at(0));
+		int delay = std::stoi(paramList->at(0));
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 	}

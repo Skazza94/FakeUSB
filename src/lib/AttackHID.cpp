@@ -26,11 +26,8 @@ std::pair<std::string, std::string> * AttackHID::parseCommand(const std::string 
 	std::regex commandRegex("^([A-Za-z_]+)(\\s)+(.*)$", std::regex_constants::icase);
 	std::smatch matches; std::regex_search(command, matches, commandRegex);
 
-	std::string commandName = matches[1].str();
-	std::string commandParams = matches[3].str();
-
-	if(!commandName.empty() && !commandParams.empty())
-		return new std::pair<std::string, std::string>(commandName, commandParams);
+	if(!matches[1].str().empty() && !matches[3].str().empty())
+		return new std::pair<std::string, std::string>(matches[1].str(), matches[3].str());
 
 	return NULL;
 }

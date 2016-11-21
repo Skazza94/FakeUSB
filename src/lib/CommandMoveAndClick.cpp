@@ -17,8 +17,8 @@ std::list<__u8 *> * CommandMoveAndClick::preparePayLoad(std::vector<std::string>
 	std::list<__u8 *> * payLoad = new std::list<__u8 *>;
 
 	__u8 button = findButton(params->at(0).at(0));
-	int hMovement = stoi(params->at(1));
-	int vMovement = stoi(params->at(2));
+	int hMovement = std::stoi(params->at(1));
+	int vMovement = std::stoi(params->at(2));
 	bool isHPositive = (hMovement >= 0);
 	bool isVPositive = (vMovement >= 0);
 

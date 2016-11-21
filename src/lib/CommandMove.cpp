@@ -16,8 +16,8 @@ CommandMove::~CommandMove() {}
 std::list<__u8 *> * CommandMove::preparePayLoad(std::vector<std::string> * params, __u16 maxPacketSize) {
 	std::list<__u8 *> * payLoad = new std::list<__u8 *>;
 
-	int hMovement = stoi(params->at(0));
-	int vMovement = stoi(params->at(1));
+	int hMovement = std::stoi(params->at(0));
+	int vMovement = std::stoi(params->at(1));
 	bool isHPositive = (hMovement >= 0);
 	bool isVPositive = (vMovement >= 0);
 

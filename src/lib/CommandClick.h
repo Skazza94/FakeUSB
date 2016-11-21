@@ -1,12 +1,13 @@
 /*
- * CommandClick.h
+ * This file is not part of original USBProxy.
+ * Sub-class of Command. 
+ * Does a mouse click. Parameter is the button to click (Left, Right, Middle).
  *
- *  Created on: 19 nov 2016
- *      Author: dibbidouble
+ * Author: dibbidouble & Skazza
  */
 
-#ifndef SRC_LIB_COMMANDCLICK_H_
-#define SRC_LIB_COMMANDCLICK_H_
+#ifndef USBPROXY_COMMANDCLICK_H
+#define USBPROXY_COMMANDCLICK_H
 
 #include "Command.h"
 #include "KeyMap.h"
@@ -26,4 +27,4 @@ public:
 	static Command * createInstance() { return new CommandClick(); }
 };
 
-#endif /* SRC_LIB_COMMANDCLICK_H_ */
+#endif /* USBPROXY_COMMANDCLICK_H */

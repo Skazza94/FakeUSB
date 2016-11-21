@@ -1,12 +1,14 @@
 /*
- * CommandMove.h
+ * This file is not part of original USBProxy.
+ * Sub-class of Command. 
+ * Moves the mouse of x pixels horizontally and y pixels vertically while clicking a button. 
+ * Positive numbers are right/down movements, negative numbers are left/up movements. Params are button to click (Left, Right, Middle), x pixels and y pixels.
  *
- *  Created on: 19 nov 2016
- *      Author: dibbidouble
+ * Author: dibbidouble & Skazza
  */
 
-#ifndef SRC_LIB_COMMANDMOVEANDCLICK_H_
-#define SRC_LIB_COMMANDMOVEANDCLICK_H_
+#ifndef USBPROXY_COMMANDMOVEANDCLICK_H
+#define USBPROXY_COMMANDMOVEANDCLICK_H
 
 #include <algorithm>
 
@@ -28,4 +30,4 @@ public:
 	static Command * createInstance() { return new CommandMoveAndClick(); }
 };
 
-#endif /* SRC_LIB_COMMANDMOVEANDCLICK_H_ */
+#endif /* USBPROXY_COMMANDMOVEANDCLICK_H */

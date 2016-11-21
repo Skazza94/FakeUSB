@@ -1,12 +1,14 @@
 /*
- * CommandMove.h
+ * This file is not part of original USBProxy.
+ * Sub-class of Command. 
+ * Moves the mouse of x pixels horizontally and y pixels vertically. 
+ * Positive numbers are right/down movements, negative numbers are left/up movements. Params are x pixels and y pixels.
  *
- *  Created on: 19 nov 2016
- *      Author: dibbidouble
+ * Author: dibbidouble & Skazza
  */
 
-#ifndef SRC_LIB_COMMANDMOVE_H_
-#define SRC_LIB_COMMANDMOVE_H_
+#ifndef USBPROXY_COMMANDMOVE_H
+#define USBPROXY_COMMANDMOVE_H
 
 #include <algorithm>
 
@@ -27,4 +29,4 @@ public:
 	static Command * createInstance() { return new CommandMove(); }
 };
 
-#endif /* SRC_LIB_COMMANDMOVE_H_ */
+#endif /* USBPROXY_COMMANDMOVE_H */

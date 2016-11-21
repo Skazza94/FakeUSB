@@ -1,12 +1,12 @@
 /*
- * Command.h
+ * This abstract class represents a generic command. It has two abstract methods, first to parse passed parameters with regexp
+ * and the second one to execute the parsed command. Works together with CommandFactory.
  *
- *  Created on: 18 nov 2016
- *      Author: skazza
+ * Author: Skazza
  */
 
-#ifndef SRC_LIB_COMMAND_H_
-#define SRC_LIB_COMMAND_H_
+#ifndef USBPROXY_COMMAND_H
+#define USBPROXY_COMMAND_H
 
 #include <list>
 #include <string>
@@ -26,4 +26,4 @@ public:
 	virtual std::list<__u8 *> * execute(const std::string &, __u16) = 0;
 };
 
-#endif /* SRC_LIB_COMMAND_H_ */
+#endif /* USBPROXY_COMMAND_H */

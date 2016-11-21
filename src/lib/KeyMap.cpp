@@ -1,8 +1,7 @@
 /*
- * KeyMap.cpp
+ * Utility functions to convert ASCII characters of IT keyboard and Mouse Buttons into USB Bytes.
  *
- *  Created on: 21 nov 2016
- *      Author: skazza
+ * Author: Skazza
  */
 
 #include "KeyMap.h"

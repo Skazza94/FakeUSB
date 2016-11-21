@@ -1,7 +1,7 @@
 /*
  * This file is not part of original USBProxy.
  * Sub-class of Attack. 
- * Adds few specific descriptor type fields + callbacks for HIDs.
+ * Adds few specific descriptor type fields + callbacks for HIDs, parses file commands and returns payloads.
  *
  * Author: dibbidouble & Skazza
  */

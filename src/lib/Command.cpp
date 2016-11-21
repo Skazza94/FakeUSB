@@ -1,8 +1,8 @@
 /*
- * Command.cpp
+ * This abstract class represents a generic command. It has two abstract methods, first to parse passed parameters with regexp
+ * and the second one to execute the parsed command. Works together with CommandFactory.
  *
- *  Created on: 18 nov 2016
- *      Author: skazza
+ * Author: Skazza
  */
 
 #include "Command.h"

@@ -1,8 +1,10 @@
 /*
- * CommandMove.cpp
+ * This file is not part of original USBProxy.
+ * Sub-class of Command. 
+ * Moves the mouse of x pixels horizontally and y pixels vertically. 
+ * Positive numbers are right/down movements, negative numbers are left/up movements. Params are x pixels and y pixels.
  *
- *  Created on: 19 nov 2016
- *      Author: dibbidouble
+ * Author: dibbidouble & Skazza
  */
 
 #include "CommandMove.h"

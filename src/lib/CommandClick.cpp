@@ -1,8 +1,9 @@
 /*
- * CommandClick.cpp
+ * This file is not part of original USBProxy.
+ * Sub-class of Command. 
+ * Does a mouse click. Parameter is the button to click (Left, Right, Middle).
  *
- *  Created on: 19 nov 2016
- *      Author: dibbidouble
+ * Author: dibbidouble & Skazza
  */
 
 #include "CommandClick.h"

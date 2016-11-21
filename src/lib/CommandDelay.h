@@ -1,12 +1,13 @@
 /*
- * CommandDelay.h
+ * This file is not part of original USBProxy.
+ * Sub-class of Command. 
+ * Sleeps the thread for N ms before proceeding with command execution. Parameter is the number of ms to wait.
  *
- *  Created on: 19 nov 2016
- *      Author: dibbidouble
+ * Author: dibbidouble & Skazza
  */
 
-#ifndef SRC_LIB_COMMANDDELAY_H_
-#define SRC_LIB_COMMANDDELAY_H_
+#ifndef USBPROXY_COMMANDDELAY_H
+#define USBPROXY_COMMANDDELAY_H
 
 #include <chrono>
 #include <thread>
@@ -25,4 +26,4 @@ public:
 	static Command * createInstance() { return new CommandDelay(); }
 };
 
-#endif /* SRC_LIB_COMMANDDELAY_H_ */
+#endif /* USBPROXY_COMMANDDELAY_H */

@@ -1,8 +1,10 @@
 /*
- * CommandWrite.cpp
+ * This file is not part of original USBProxy.
+ * Sub-class of Command. 
+ * Writes a string as a keyboard will do. Characters without modifiers are sent in a single packet to speed up typing.
+ * Param is a double-quote delimited string with the text to write.
  *
- *  Created on: 18 nov 2016
- *      Author: skazza
+ * Author: Skazza
  */
 
 #include "CommandWrite.h"

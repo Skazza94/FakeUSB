@@ -1,4 +1,4 @@
-/*keyboard
+/*
  * This file is not part of original USBProxy.
  * Sub-class of AttackHID.
  * Handles a mouse emulation, making fake packets and sending them to the host! :P

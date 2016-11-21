@@ -1,8 +1,9 @@
 /*
- * CommandDelay.cpp
+ * This file is not part of original USBProxy.
+ * Sub-class of Command. 
+ * Sleeps the thread for N ms before proceeding with command execution. Parameter is the number of ms to wait.
  *
- *  Created on: 19 nov 2016
- *      Author: dibbidouble
+ * Author: dibbidouble & Skazza
  */
 
 #include "CommandDelay.h"

@@ -1,8 +1,11 @@
 /*
- * CommandPresskeys.cpp
+ * This file is not part of original USBProxy.
+ * Sub-class of Command. 
+ * Simulates a keyboard shortcut or a keyboard button pressing, including "modifiers" on byte 0. 
+ * Param is a string with buttons to press separated by a + sign. NO MORE THAN ONE NON-MODIFIER INTO THE STRING.
+ * Ex: CTRL+ALT+t, NOT ALLOWED: CTRL+t+a
  *
- *  Created on: 19 nov 2016
- *      Author: dibbidouble
+ * Author: Skazza
  */
 
 #include "CommandPressKeys.h"

@@ -7,8 +7,6 @@
 
 #include "CommandWrite.h"
 
-#include "HexString.h"
-
 CommandWrite::CommandWrite() : Command() {}
 
 CommandWrite::~CommandWrite() {}
@@ -18,7 +16,10 @@ std::list<__u8 *> * CommandWrite::preparePayLoad(std::string stringToWrite, __u1
 
 	for(unsigned int i = 0; i < stringToWrite.length(); ++i) {
 		__u8 * packetPressed = (__u8 *) calloc(maxPacketSize, sizeof(__u8));
-		packetPressed[0x02] = this->ascii2USBByte[stringToWrite[i]];
+		std::pair<__u8, __u8> firstAndThirdByte = findCharacter(stringToWrite[i]);
+
+		packetPressed[0x00] = firstAndThirdByte.first;
+		packetPressed[0x02] = firstAndThirdByte.second;
 
 		payLoad->push_back(packetPressed);
 

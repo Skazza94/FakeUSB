@@ -74,7 +74,9 @@ void AttackHID::loadAttack() {
 	if (attackFile.good()) {
 		while (!attackFile.eof()) {
 			std::getline(attackFile, line);
-			this->attackCommands->push_back(line);
+
+			if(line.at(0) != '#')
+				this->attackCommands->push_back(line);
 		}
 	}
 

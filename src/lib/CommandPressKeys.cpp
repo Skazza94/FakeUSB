@@ -15,11 +15,14 @@ std::list<__u8 *> * CommandPressKeys::preparePayLoad(std::vector<std::string> * 
 	std::list<__u8 *> * payLoad = new std::list<__u8 *>;
 
 	__u8 * packetPressed = (__u8 *) calloc(maxPacketSize, sizeof(__u8));
-	int bytePos = 0x02;
 	for(std::vector<std::string>::iterator it = params->begin(); it != params->end(); ++it) {
-		packetPressed[bytePos] = this->ascii2USBByte[(*it)];
+		std::pair<__u8, __u8> firstAndThirdByte = findKey((*it));
 
-		bytePos++;
+		if(firstAndThirdByte.first == 0x00 && firstAndThirdByte.second == 0x00)
+			firstAndThirdByte = findCharacter((*it).at(0));
+
+		packetPressed[0x00] += firstAndThirdByte.first;
+		packetPressed[0x02] = firstAndThirdByte.second;
 	}
 	payLoad->push_back(packetPressed);
 

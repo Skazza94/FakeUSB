@@ -32,6 +32,7 @@ set(cpp_sources
 	${CMAKE_CURRENT_SOURCE_DIR}/AttackHID.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/AttackHIDKeyboard.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Command.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/KeyMap.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/CommandWrite.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/CommandPressKeys.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/CommandDelay.cpp
@@ -73,6 +74,7 @@ set(headers
 	${CMAKE_CURRENT_SOURCE_DIR}/AttackHID.h
 	${CMAKE_CURRENT_SOURCE_DIR}/AttackHIDKeyboard.h
 	${CMAKE_CURRENT_SOURCE_DIR}/Command.h
+	${CMAKE_CURRENT_SOURCE_DIR}/KeyMap.h
 	${CMAKE_CURRENT_SOURCE_DIR}/CommandWrite.h
 	${CMAKE_CURRENT_SOURCE_DIR}/CommandPressKeys.h
 	${CMAKE_CURRENT_SOURCE_DIR}/CommandDelay.h

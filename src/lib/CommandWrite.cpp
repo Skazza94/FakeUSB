@@ -40,8 +40,8 @@ std::list<__u8 *> * CommandWrite::preparePayLoad(std::string stringToWrite, __u1
 		payLoad->push_back(*it);
 		if(packetPressed) {
 			payLoad->push_back(packetPressed);
-
 			__u8 thirdByte = packetPressed[0x03];
+			
 			packetPressed = (__u8 *) calloc(maxPacketSize, sizeof(__u8));
 			packetPressed[0x02] = thirdByte;
 			payLoad->push_back(packetPressed);

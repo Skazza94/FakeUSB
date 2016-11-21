@@ -57,7 +57,7 @@ std::list<__u8 *> * CommandMoveAndClick::preparePayLoad(std::vector<std::string>
 }
 
 std::vector<std::string> * CommandMoveAndClick::parseParams(const std::string &paramString) {
-	std::regex paramRegex("^(R|L|M) (-?\\d+),((-)?\\d+)$", std::regex_constants::icase);
+	std::regex paramRegex("^(R|L|M) (-?\\d+),(-?\\d+)$", std::regex_constants::icase);
 	std::smatch matches; std::regex_search(paramString, matches, paramRegex);
 
 	if(!matches[1].str().empty() && !matches[2].str().empty() && !matches[3].str().empty()) {

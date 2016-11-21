@@ -49,7 +49,7 @@ std::list<__u8 *> * CommandMove::preparePayLoad(std::vector<std::string> * param
 
 
 std::vector<std::string> * CommandMove::parseParams(const std::string &paramString) {
-	std::regex paramRegex("^(-?\\d+),((-)?\\d+)$", std::regex_constants::icase);
+	std::regex paramRegex("^(-?\\d+),(-?\\d+)$", std::regex_constants::icase);
 	std::smatch matches; std::regex_search(paramString, matches, paramRegex);
 
 	if(!matches[1].str().empty() && !matches[2].str().empty()) {

@@ -23,19 +23,20 @@ AttackHID::~AttackHID() {
 }
 
 std::pair<std::string, std::string> * AttackHID::parseCommand(const std::string &command) {
-	std::regex commandRegex("^([A-Za-z_]+)(\\s)+(.*)$", std::regex_constants::icase);
+	std::regex commandRegex("^([A-Za-z_]+)(\\s)*(.*)$", std::regex_constants::icase);
 	std::smatch matches; std::regex_search(command, matches, commandRegex);
 
 	std::string commandName = matches[1].str();
 	std::string commandParams = matches[3].str();
 
-	if(!commandName.empty() && !commandParams.empty()) {
+	if(!commandName.empty()) {
 		std::transform(commandName.begin(), commandName.end(), commandName.begin(), ::toupper);
 		return new std::pair<std::string, std::string>(commandName, commandParams);
 	}
 
 	return NULL;
 }
+
 
 std::list<__u8 *> * AttackHID::getNextPayload(__u8 endpoint, __u16 maxPacketSize) {
 	if(endpoint == 0x81) {
@@ -75,8 +76,10 @@ void AttackHID::loadAttack() {
 		while (!attackFile.eof()) {
 			std::getline(attackFile, line);
 
-			if(line.at(0) != '#')
-				this->attackCommands->push_back(line);
+			if(!line.empty()) {
+				if(line.at(0) != '#')
+					this->attackCommands->push_back(line);
+			}
 		}
 	}
 

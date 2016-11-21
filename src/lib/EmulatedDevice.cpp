@@ -104,7 +104,7 @@ EmulatedDevice::EmulatedDevice(DeviceProxy * proxy) {
 		if (descriptor.iSerialNumber)
 			this->addStringFromFile(configFileHandler, descriptor.iSerialNumber);
 
-		highspeed = false;
+		highspeed = true;
 		qualifier = NULL;
 
 		fclose(configFileHandler);

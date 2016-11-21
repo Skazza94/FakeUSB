@@ -14,5 +14,6 @@
 
 std::pair<__u8, __u8> findCharacter(char);
 std::pair<__u8, __u8> findKey(std::string);
+__u8 findButton(char button);
 
 #endif /* USBPROXY_KEYMAP_H */

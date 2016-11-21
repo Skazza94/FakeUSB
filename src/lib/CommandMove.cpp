@@ -11,40 +11,36 @@ CommandMove::CommandMove() : Command() {}
 
 CommandMove::~CommandMove() {}
 
-std::list<__u8 *> * CommandMove::preparePayLoad(std::string commandForMovement, __u16 maxPacketSize) {
+std::list<__u8 *> * CommandMove::preparePayLoad(std::vector<std::string> * params, __u16 maxPacketSize) {
 	std::list<__u8 *> * payLoad = new std::list<__u8 *>;
 
-	std::string command = commandForMovement;
+	int hMovement = stoi(params->at(0));
+	int vMovement = stoi(params->at(1));
+	bool isHPositive = (hMovement >= 0);
+	bool isVPositive = (vMovement >= 0);
 
-	std::string delimiter = ",";
-	size_t pos = command.find(delimiter);
+	hMovement = std::abs(hMovement);
+	vMovement = std::abs(vMovement);
 
-	int hMovement = stoi(command.substr(0, pos), nullptr, 10);
-	command.erase(0, pos + delimiter.length());
-	int vMovement = stoi(command, nullptr, 10);
+	int nPackets = std::max(hMovement, vMovement);
 
-	int total_movement = abs(hMovement) + abs(vMovement);
-	int i;
-
-	for (i=0 ; i<total_movement ; i++) {
+	for(int i = 0; i < nPackets; i += 0x7f) {
 		__u8 * packetMovement = (__u8 *) calloc(maxPacketSize, sizeof(__u8));
-		__u8 * packetReleased = (__u8 *) calloc(maxPacketSize, sizeof(__u8));
-		if (hMovement!=0) {				//horizontal_movement
-			if (hMovement>0)
-				packetMovement[1] = 0x01;
-			else
-				packetMovement[1] = 0xff;
-			payLoad->push_back(packetMovement);
-			payLoad->push_back(packetReleased);
+
+		if(hMovement > 0) {
+			int minHMovement = std::min(hMovement, 0x7f);
+			packetMovement[0x01] = (isHPositive) ? minHMovement : (0xff - minHMovement + 0x01);
+			hMovement -= minHMovement;
 		}
-		packetMovement[1] = 0x00;
-		if (vMovement!=0) {				//horizontal_movement
-			if (vMovement>0)
-				packetMovement[2] = 0x01;
-			else
-				packetMovement[2] = 0xff;
-			payLoad->push_back(packetMovement);
-			payLoad->push_back(packetReleased);
+
+		payLoad->push_back(packetMovement);
+	}
+
+	for(std::list<__u8 *>::iterator it = payLoad->begin(); it != payLoad->end(); ++it) {
+		if(vMovement > 0) {
+			int minVMovement = std::min(vMovement, 0x7f);
+			(*it)[0x02] = (isVPositive) ? minVMovement : (0xff - minVMovement + 0x01);
+			vMovement -= minVMovement;
 		}
 	}
 
@@ -52,13 +48,14 @@ std::list<__u8 *> * CommandMove::preparePayLoad(std::string commandForMovement, 
 }
 
 
-std::vector<std::string> * CommandMove::parseParams(std::string paramString) {
-	std::regex paramRegex("\"(.*)\"", std::regex_constants::icase | std::regex::extended);
+std::vector<std::string> * CommandMove::parseParams(const std::string &paramString) {
+	std::regex paramRegex("^(-?\\d+),((-)?\\d+)$", std::regex_constants::icase);
 	std::smatch matches; std::regex_search(paramString, matches, paramRegex);
 
-	if(!matches[1].str().empty()) {
+	if(!matches[1].str().empty() && !matches[2].str().empty()) {
 		std::vector<std::string> * paramVector = new std::vector<std::string>;
 		paramVector->push_back(matches[1].str());
+		paramVector->push_back(matches[2].str());
 
 		return paramVector;
 	}
@@ -66,11 +63,11 @@ std::vector<std::string> * CommandMove::parseParams(std::string paramString) {
 	return NULL;
 }
 
-std::list<__u8 *> * CommandMove::execute(std::string paramString, __u16 maxPacketSize) {
+std::list<__u8 *> * CommandMove::execute(const std::string &paramString, __u16 maxPacketSize) {
 	std::vector<std::string> * paramList = this->parseParams(paramString);
 
 	if(paramList) {
-		std::list<__u8 *> * payLoad = this->preparePayLoad(paramList->at(0), maxPacketSize);
+		std::list<__u8 *> * payLoad = this->preparePayLoad(paramList, maxPacketSize);
 		delete(paramList);
 
 		return payLoad;

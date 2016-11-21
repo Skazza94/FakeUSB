@@ -7,6 +7,12 @@
 
 #include "KeyMap.h"
 
+std::map<char, __u8> mouseButton2Byte {
+	{'L', 0x01},
+	{'R', 0x02},
+	{'M', 0x04}
+};
+
 std::map<char, __u8> ascii2Byte {
 	{'a', 0x04},
 	{'b', 0x05},
@@ -210,4 +216,13 @@ std::pair<__u8, __u8> findKey(std::string key) {
 	}
 
 	return firstAndThirdByte;
+}
+
+__u8 findButton(char button) {
+	std::map<char, __u8>::iterator it = mouseButton2Byte.find(button);
+
+	if(it != mouseButton2Byte.end())
+		return (*it).second;
+
+	return 0x00;
 }

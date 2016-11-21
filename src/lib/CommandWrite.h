@@ -8,6 +8,8 @@
 #ifndef SRC_LIB_COMMANDWRITE_H_
 #define SRC_LIB_COMMANDWRITE_H_
 
+#include <iterator>
+
 #include "Command.h"
 #include "KeyMap.h"
 

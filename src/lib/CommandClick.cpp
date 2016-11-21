@@ -11,26 +11,23 @@ CommandClick::CommandClick() : Command() {}
 
 CommandClick::~CommandClick() {}
 
-std::list<__u8 *> * CommandClick::preparePayLoad(std::string commandToDo, __u16 maxPacketSize) {
+std::list<__u8 *> * CommandClick::preparePayLoad(std::string params, __u16 maxPacketSize) {
 	std::list<__u8 *> * payLoad = new std::list<__u8 *>;
 
-	char clickToDo = commandToDo->at(0);
+	__u8 * packet = (__u8 *) calloc(maxPacketSize, sizeof(__u8));
 
-	__u8 * packetClicked = (__u8 *) calloc(maxPacketSize, sizeof(__u8));
-
-	packetClicked[0] = this->ascii2USBByte[clickToDo];
-	payLoad->push_back(packetClicked);
-
-	//and if we want to drag anithing ... release is request?
-	__u8 * packetReleased = (__u8 *) calloc(maxPacketSize, sizeof(__u8));
-	payLoad->push_back(packetReleased);
+	packet[0x00] = findButton(params.at(0));
+	payLoad->push_back(packet);
+	
+	packet = (__u8 *) calloc(maxPacketSize, sizeof(__u8));
+	payLoad->push_back(packet);
 
 	return payLoad;
 }
 
 
-std::vector<std::string> * CommandClick::parseParams(std::string paramString) {
-	std::regex paramRegex("\"(.*)\"", std::regex_constants::icase | std::regex::extended);
+std::vector<std::string> * CommandClick::parseParams(const std::string &paramString) {
+	std::regex paramRegex("^(R|L|M)$", std::regex_constants::icase | std::regex::extended);
 	std::smatch matches; std::regex_search(paramString, matches, paramRegex);
 
 	if(!matches[1].str().empty()) {
@@ -43,7 +40,7 @@ std::vector<std::string> * CommandClick::parseParams(std::string paramString) {
 	return NULL;
 }
 
-std::list<__u8 *> * CommandClick::execute(std::string paramString, __u16 maxPacketSize) {
+std::list<__u8 *> * CommandClick::execute(const std::string &paramString, __u16 maxPacketSize) {
 	std::vector<std::string> * paramList = this->parseParams(paramString);
 
 	if(paramList) {

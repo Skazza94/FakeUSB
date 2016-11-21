@@ -243,7 +243,6 @@ void Manager::start_control_relaying(){
 	int rc = deviceProxy->connect();
 
 	this->deviceProxy->setAttack(attack);
-	this->attack->setDeviceProxy(deviceProxy);
 
 	// modified 20141007 atsumi@aizulab.com
   // I think interfaces are claimed soon after connecting device.
@@ -283,8 +282,6 @@ void Manager::start_control_relaying(){
 		stop_relaying();
 		return;
 	}
-
-	this->attack->setHostProxy(hostProxy);
 
 	if (out_readers[0]) {
 		out_readerThreads[0] = std::thread(&RelayReader::relay_read, out_readers[0]);
@@ -502,4 +499,5 @@ void Manager::cleanup() {
 void Manager::initAttack() {
 	this->attack = AttackFactory::getInstance()->createInstance(this->cfg->get("Device"));
 	this->attack->setDevice(device);
+	this->attack->setCfgParser(cfg);
 }

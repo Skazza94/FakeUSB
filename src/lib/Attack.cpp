@@ -22,6 +22,8 @@ Attack::Attack(__u32 _delayTimer) {
 Attack::~Attack() {}
 
 int Attack::parseSetupRequest(const usb_ctrlrequest setupPacket, int * nBytes, __u8 * dataPtr) {
+	*nBytes = 0;
+	
 	__u8 descType = setupPacket.wValue >> 8;
 	__u8 bRequest = setupPacket.bRequest;
 

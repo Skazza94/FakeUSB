@@ -19,16 +19,14 @@
 #include "AttackFactory.hpp"
 #include "Device.h"
 #include "USBString.h"
-#include "DeviceProxy.h" //TODO: Useless references
-#include "HostProxy.h" //TODO: Useless references
+#include "ConfigParser.h"
 
 class Attack {
 protected:
 	Attack(__u32);
 
 	Device * device = NULL;
-	HostProxy * hostProxy = NULL;
-	DeviceProxy * deviceProxy = NULL;
+	ConfigParser * cfg = NULL;
 	/* This boolean tells when the Manager has initialized all the endpoint threads. */
 	bool canAttack = false;
 	/* How many seconds wait before start sending packets from fake device.
@@ -49,8 +47,7 @@ public:
 
 	int parseSetupRequest(const usb_ctrlrequest, int *, __u8 *);
 	void setDevice(Device * device) { this->device = device; }
-	void setDeviceProxy(DeviceProxy * deviceProxy) { this->deviceProxy = deviceProxy; }
-	void setHostProxy(HostProxy * hostProxy) { this->hostProxy = hostProxy; }
+	void setCfgParser(ConfigParser * cfg) { this->cfg = cfg; }
 
 	virtual std::list<__u8 *> * getNextPayload(__u8, __u16) = 0;
 

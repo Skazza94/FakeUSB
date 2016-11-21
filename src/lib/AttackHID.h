@@ -11,7 +11,6 @@
 
 #include <string>
 #include <regex>
-#include <algorithm>
 #include <fstream>
 
 #include "Attack.h"

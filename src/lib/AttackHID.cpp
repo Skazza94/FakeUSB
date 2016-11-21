@@ -23,16 +23,14 @@ AttackHID::~AttackHID() {
 }
 
 std::pair<std::string, std::string> * AttackHID::parseCommand(const std::string &command) {
-	std::regex commandRegex("^([A-Za-z_]+)(\\s)*(.*)$", std::regex_constants::icase);
+	std::regex commandRegex("^([A-Za-z_]+)(\\s)+(.*)$", std::regex_constants::icase);
 	std::smatch matches; std::regex_search(command, matches, commandRegex);
 
 	std::string commandName = matches[1].str();
 	std::string commandParams = matches[3].str();
 
-	if(!commandName.empty()) {
-		std::transform(commandName.begin(), commandName.end(), commandName.begin(), ::toupper);
+	if(!commandName.empty() && !commandParams.empty())
 		return new std::pair<std::string, std::string>(commandName, commandParams);
-	}
 
 	return NULL;
 }
@@ -69,7 +67,7 @@ std::list<__u8 *> * AttackHID::getNextPayload(__u8 endpoint, __u16 maxPacketSize
 
 void AttackHID::loadAttack() {
 	/* TODO: Load some endpoints criteria in some way... */
-	std::ifstream attackFile(this->deviceProxy->cfg->get("AttackFile"), std::ios::in);
+	std::ifstream attackFile(this->cfg->get("AttackFile"), std::ios::in);
 	std::string line;
 
 	if (attackFile.good()) {
@@ -88,7 +86,7 @@ void AttackHID::loadAttack() {
 
 /* ~~ Setup Request Callbacks ~~ */
 __u8 AttackHID::getHIDReportDescriptor(const usb_ctrlrequest packet, __u8 * dataPtr) {
-	std::string deviceHIDReport = "/home/debian/AntiUSBProxy/config/" + this->deviceProxy->cfg->get("Device") + "HIDReport/iface" + std::to_string(packet.wIndex);
+	std::string deviceHIDReport = "/home/debian/AntiUSBProxy/config/" + this->cfg->get("Device") + "HIDReport/iface" + std::to_string(packet.wIndex);
 
 	FILE * hidReportFileHandler = fopen(deviceHIDReport.c_str(), "rb");
 

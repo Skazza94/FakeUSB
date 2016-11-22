@@ -9,7 +9,6 @@
 #define USBPROXY_EMULATEDDEVICE_H
 
 #include <stdio.h>
-#include <sstream>
 #include <string.h>
 
 #include "Device.h"

@@ -33,7 +33,7 @@ std::pair<std::string, std::string> * AttackHID::parseCommand(const std::string 
 }
 
 
-std::list<__u8 *> * AttackHID::getNextPayload(__u8 endpoint, __u16 maxPacketSize) {
+void AttackHID::getNextPayload(std::list<__u8 *> ** payload, __u8 endpoint, __u16 maxPacketSize) {
 	if(endpoint == 0x81) {
 		if(!this->attackCommands->empty()) {
 			std::string commandString = this->attackCommands->front();
@@ -45,21 +45,21 @@ std::list<__u8 *> * AttackHID::getNextPayload(__u8 endpoint, __u16 maxPacketSize
 
 			if(commandAndParams) {
 				Command * command = CommandFactory::getInstance()->createInstance(commandAndParams->first);
-				std::list<__u8 *> * payload = new std::list<__u8 *>;
 
 				if(command) {
-					payload = command->execute(commandAndParams->second, maxPacketSize);
+					std::list<__u8 *> * newPayload = command->execute(commandAndParams->second, maxPacketSize);
+					std::copy(newPayload->begin(), newPayload->end(), std::back_insert_iterator<std::list<__u8 *>>(**payload));
+
 					delete(command);
+					delete(newPayload);
 				}
 
 				delete(commandAndParams);
 
-				return payload;
+				return;
 			}
 		}
 	}
-
-	return new std::list<__u8 *>;
 }
 
 void AttackHID::loadAttack() {
@@ -83,7 +83,9 @@ void AttackHID::loadAttack() {
 
 /* ~~ Setup Request Callbacks ~~ */
 __u8 AttackHID::getHIDReportDescriptor(const usb_ctrlrequest packet, __u8 * dataPtr) {
-	std::string deviceHIDReport = "/home/debian/AntiUSBProxy/config/" + this->cfg->get("Device") + "HIDReport/iface" + std::to_string(packet.wIndex);
+	__u8 activeConfigIndex = this->device->get_active_configuration()->get_descriptor()->bConfigurationValue - 1;
+	std::string hidReportFolder = "/home/debian/AntiUSBProxy/config/" + this->cfg->get("Device") + "/config" + std::to_string(activeConfigIndex) + "/iface" + std::to_string(packet.wIndex) + "/";
+	std::string deviceHIDReport = hidReportFolder + "hidReport";
 
 	FILE * hidReportFileHandler = fopen(deviceHIDReport.c_str(), "rb");
 

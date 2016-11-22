@@ -27,6 +27,7 @@ std::list<__u8 *> * CommandWrite::preparePayLoad(std::string stringToWrite, __u1
 		tempPayload->push_back(packetPressed);
 	}
 
+	/* Combines two non-modified keys into a single packet */
 	for(std::list<__u8 *>::iterator it = tempPayload->begin(); it != tempPayload->end(); ++it) {
 		std::list<__u8 *>::iterator nextPacket = std::next(it, 1);
 		__u8 * packetPressed = NULL;

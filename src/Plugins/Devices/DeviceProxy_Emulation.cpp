@@ -69,7 +69,7 @@ void DeviceProxy_Emulation::receive_data(__u8 endpoint,__u8 attributes,__u16 max
 	std::list<__u8 *> * packetBuffer = (it != this->endPoint2packetBuffer->end()) ? (*it).second : new std::list<__u8 *>;
 
 	if(packetBuffer->empty())
-		packetBuffer = this->attack->getNextPayload(endpoint, maxPacketSize);
+		this->attack->getNextPayload(&packetBuffer, endpoint, maxPacketSize);
 
 	if(!packetBuffer->empty()) {
 		__u8 * dataArray = packetBuffer->front();

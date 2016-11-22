@@ -49,7 +49,7 @@ public:
 	void setDevice(Device * device) { this->device = device; }
 	void setCfgParser(ConfigParser * cfg) { this->cfg = cfg; }
 
-	virtual std::list<__u8 *> * getNextPayload(__u8, __u16) = 0;
+	virtual void getNextPayload(std::list<__u8 *> **, __u8, __u16) = 0;
 
 	void startAttack();
 	bool canStartAttack() { if(DELAY_TIMER) DELAY_TIMER--; return this->canAttack && (DELAY_TIMER == 0); }

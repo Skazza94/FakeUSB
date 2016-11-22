@@ -11,15 +11,18 @@ EmulatedDevice::EmulatedDevice(DeviceProxy * proxy) {
 	this->proxy = proxy;
 	this->proxy->setDevice(this);
 
-	/* Get the device descriptor, configurations, interfaces, endpoints from a config file */
-	std::ostringstream deviceConfiguration; deviceConfiguration << "/home/debian/AntiUSBProxy/config/DeviceConfig/" << this->proxy->cfg->get("Device") << "Config";
+	/* Get the device descriptor, configurations, interfaces, endpoints from config files */
+	std::string deviceConfigurationDir = "/home/debian/AntiUSBProxy/config/" + this->proxy->cfg->get("Device");
+	std::string fileName = deviceConfigurationDir + "/device";
 
-	FILE * configFileHandler = fopen(deviceConfiguration.str().c_str(), "rb");
+	FILE * fileHandler = fopen(fileName.c_str(), "rb");
 
-	if(configFileHandler) {
-		fread(&descriptor, sizeof(descriptor), 1, configFileHandler);
+	if(fileHandler) {
+		fread(&descriptor, sizeof(descriptor), 1, fileHandler);
 
 		configurations = (Configuration **) calloc(descriptor.bNumConfigurations, sizeof(*configurations));
+
+		fclose(fileHandler);
 
 		maxStringIdx = (descriptor.iManufacturer > maxStringIdx) ? descriptor.iManufacturer : maxStringIdx;
 		maxStringIdx = (descriptor.iProduct > maxStringIdx) ? descriptor.iProduct : maxStringIdx;
@@ -27,43 +30,61 @@ EmulatedDevice::EmulatedDevice(DeviceProxy * proxy) {
 		strings = (USBString ***) calloc(maxStringIdx + 1, sizeof(*strings));
 
 		for(__u8 i = 0; i < descriptor.bNumConfigurations; i++) {
+			fileName = deviceConfigurationDir + "/config" + std::to_string(i) + "/config";
+			fileHandler = fopen(fileName.c_str(), "rb");
+
 			usb_config_descriptor * configDescriptor = (usb_config_descriptor *) malloc(sizeof(usb_config_descriptor));
-			fread(configDescriptor, sizeof(*configDescriptor), 1, configFileHandler);
+			fread(configDescriptor, sizeof(*configDescriptor), 1, fileHandler);
+
+			fclose(fileHandler);
 
 			configurations[i] = new Configuration(this, configDescriptor);
 
 			/* Load each interface of the device */
 			for (__u8 j = 0; j < configurations[i]->get_descriptor()->bNumInterfaces; ++j) {
+				fileName = deviceConfigurationDir + "/config" + std::to_string(i) + "/iface" + std::to_string(j) + "/iface";
+				fileHandler = fopen(fileName.c_str(), "rb");
+
 				usb_interface_descriptor * iFaceDesc = (usb_interface_descriptor *) malloc(sizeof(usb_interface_descriptor));
-				fread(iFaceDesc, sizeof(*iFaceDesc), 1, configFileHandler);
+				fread(iFaceDesc, sizeof(*iFaceDesc), 1, fileHandler);
 
 				Interface * iface = new Interface(configurations[i], iFaceDesc);
 
 				__u8 hidDescCount = 0;
 				__u8 genericDescCount = 0;
 
-				fread(&hidDescCount, sizeof(hidDescCount), 1, configFileHandler);
-				fread(&genericDescCount, sizeof(genericDescCount), 1, configFileHandler);
+				fread(&hidDescCount, sizeof(hidDescCount), 1, fileHandler);
+				fread(&genericDescCount, sizeof(genericDescCount), 1, fileHandler);
+
+				fclose(fileHandler);
 
 				if(hidDescCount) {
+					fileName = deviceConfigurationDir + "/config" + std::to_string(i) + "/iface" + std::to_string(j) + "/hidDesc";
+					fileHandler = fopen(fileName.c_str(), "rb");
+
 					usb_hid_descriptor hidDesc;
-					fread(&hidDesc, sizeof(hidDesc), 1, configFileHandler);
+					fread(&hidDesc, sizeof(hidDesc), 1, fileHandler);
 
 					HID * hid = new HID(&hidDesc);
 					iface->set_hid_descriptor(hid);
+
+					fclose(fileHandler);
 				}
 
 				if(genericDescCount) iface->set_generic_descriptor_count(genericDescCount);
 
 				__u8 k;
 				for(k = 0; k < genericDescCount; ++k) {
+					fileName = deviceConfigurationDir + "/config" + std::to_string(i) + "/iface" + std::to_string(j) + "/genDesc" + std::to_string(k);
+					fileHandler = fopen(fileName.c_str(), "rb");
+
 					/* Read length */
 					__u8 length = 0;
-					fread(&length, sizeof(length), 1, configFileHandler);
+					fread(&length, sizeof(length), 1, fileHandler);
 
 					/* Read descriptor type */
 					__u8 descriptorType = 0;
-					fread(&descriptorType, sizeof(descriptorType), 1, configFileHandler);
+					fread(&descriptorType, sizeof(descriptorType), 1, fileHandler);
 					/* Calculate real length */
 					__u8 realLength = length - (2 * sizeof(__u8));
 
@@ -71,17 +92,24 @@ EmulatedDevice::EmulatedDevice(DeviceProxy * proxy) {
 					genericDesc->bLength = length;
 					genericDesc->bDescriptorType = descriptorType;
 
-					fread(&genericDesc->bData, realLength, 1, configFileHandler);
+					fread(&genericDesc->bData, realLength, 1, fileHandler);
 
 					iface->add_generic_descriptor(genericDesc);
+
+					fclose(fileHandler);
 				}
 
 				for(k = 0; k < iface->get_descriptor()->bNumEndpoints; ++k) {
+					fileName = deviceConfigurationDir + "/config" + std::to_string(i) + "/iface" + std::to_string(j) + "/ep" + std::to_string(k);
+					fileHandler = fopen(fileName.c_str(), "rb");
+
 					usb_endpoint_descriptor * epDesc = (usb_endpoint_descriptor *) malloc(USB_DT_ENDPOINT_SIZE);
-					fread(epDesc, USB_DT_ENDPOINT_SIZE, 1, configFileHandler);
+					fread(epDesc, USB_DT_ENDPOINT_SIZE, 1, fileHandler);
 
 					Endpoint * ep = new Endpoint(iface, epDesc);
 					iface->add_endpoint(ep);
+
+					fclose(fileHandler);
 				}
 
 				configurations[i]->add_interface(iface);
@@ -92,22 +120,40 @@ EmulatedDevice::EmulatedDevice(DeviceProxy * proxy) {
 		deviceState = USB_STATE_CONFIGURED;
 
 		/* First string is language configuration */
-		USBString * setupString = new USBString(readStringDescriptorFromFile(configFileHandler), 0, 0);
+		fileName = deviceConfigurationDir + "/stringConf";
+		fileHandler = fopen(fileName.c_str(), "rb");
+
+		USBString * setupString = new USBString(readStringDescriptorFromFile(fileHandler), 0, 0);
 		add_string(setupString);
 
-		if (descriptor.iManufacturer)
-			this->addStringFromFile(configFileHandler, descriptor.iManufacturer);
+		fclose(fileHandler);
 
-		if (descriptor.iProduct)
-			this->addStringFromFile(configFileHandler, descriptor.iProduct);
+		if (descriptor.iManufacturer) {
+			fileName = deviceConfigurationDir + "/manufacturer";
+			fileHandler = fopen(fileName.c_str(), "rb");
+			this->addStringFromFile(fileHandler, descriptor.iManufacturer);
 
-		if (descriptor.iSerialNumber)
-			this->addStringFromFile(configFileHandler, descriptor.iSerialNumber);
+			fclose(fileHandler);
+		}
 
-		highspeed = true;
+		if (descriptor.iProduct) {
+			fileName = deviceConfigurationDir + "/product";
+			fileHandler = fopen(fileName.c_str(), "rb");
+			this->addStringFromFile(fileHandler, descriptor.iProduct);
+
+			fclose(fileHandler);
+		}
+
+		if (descriptor.iSerialNumber) {
+			fileName = deviceConfigurationDir + "/serialNumber";
+			fileHandler = fopen(fileName.c_str(), "rb");
+			this->addStringFromFile(fileHandler, descriptor.iSerialNumber);
+
+			fclose(fileHandler);
+		}
+
+		highspeed = false;
 		qualifier = NULL;
-
-		fclose(configFileHandler);
 	}
 }
 

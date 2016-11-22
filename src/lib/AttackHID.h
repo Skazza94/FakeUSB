@@ -12,10 +12,11 @@
 #include <string>
 #include <regex>
 #include <fstream>
+#include <iterator>
 
 #include "Attack.h"
-#include "DeviceProxy.h"
 #include "ConfigParser.h"
+#include "Configuration.h"
 #include "Command.h"
 
 class AttackHID : public Attack {
@@ -32,7 +33,7 @@ protected:
 public:
 	virtual ~AttackHID();
 
-	std::list<__u8 *> * getNextPayload(__u8, __u16);
+	void getNextPayload(std::list<__u8 *> **, __u8, __u16);
 };
 
 #endif /* USBPROXY_ATTACKHID_H */

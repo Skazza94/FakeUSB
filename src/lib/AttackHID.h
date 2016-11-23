@@ -14,6 +14,7 @@
 #include <fstream>
 #include <iterator>
 #include <tuple>
+#include <sys/stat.h>
 
 #include "Attack.h"
 #include "ConfigParser.h"

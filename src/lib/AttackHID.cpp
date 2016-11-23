@@ -62,6 +62,17 @@ void AttackHID::getNextPayload(std::list<__u8 *> ** payload, __u8 endpoint, __u1
 }
 
 void AttackHID::loadAttack() {
+	/* Guard to avoid invalid params as attack file */
+	struct stat info;
+
+	if(stat(this->cfg->get("AttackFile").c_str(), &info ) != 0) {
+		fprintf(stderr, "Attack file not valid.\n");
+		return;
+	} else if(info.st_mode & S_IFDIR) {
+		fprintf(stderr, "Attack file is a folder.\n");
+		return;
+	}
+
 	std::ifstream attackFile(this->cfg->get("AttackFile"), std::ios::in);
 	std::string line;
 

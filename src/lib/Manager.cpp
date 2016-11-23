@@ -497,6 +497,13 @@ void Manager::cleanup() {
 
 /* We use a method because we load the Attack class to use from the config file. */
 void Manager::initAttack() {
+	/* Avoid this->attack NULL by checking if a device has been defined in cmd params.*/
+	if(this->cfg->get("Device").empty()) {
+		fprintf(stderr, "No device to emulate specified. Exiting...\n");
+		status = USBM_SETUP_ABORT;
+		return;
+	}
+
 	this->attack = AttackFactory::getInstance()->createInstance(this->cfg->get("Device"));
 	this->attack->setDevice(device);
 	this->attack->setCfgParser(cfg);

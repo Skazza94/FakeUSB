@@ -42,6 +42,7 @@ void DeviceProxy_Emulation::send_data(__u8 endpoint, __u8 attributes, __u16 maxP
 	std::list<__u8 *> * packetBuffer = this->getPacketBufferForEndpoint(endpoint);
 	this->attack->parseDeviceRequest(endpoint, maxPacketSize, dataptr, length, &packetBuffer);
 	this->setPacketBufferForEndpoint(packetBuffer, endpoint);
+
 }
 
 void DeviceProxy_Emulation::receive_data(__u8 endpoint, __u8 attributes, __u16 maxPacketSize, __u8 ** dataptr, int * length, int timeout) {

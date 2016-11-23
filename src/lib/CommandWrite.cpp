@@ -25,6 +25,9 @@ std::list<__u8 *> * CommandWrite::preparePayLoad(std::string stringToWrite, __u1
 		payLoad->push_back(packetPressed);
 	}
 
+	__u8 * packetReleased = (__u8 *) calloc(maxPacketSize, sizeof(__u8));
+	payLoad->push_back(packetReleased);
+
 	return payLoad;
 }
 

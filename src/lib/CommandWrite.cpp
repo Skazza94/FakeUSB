@@ -1,8 +1,7 @@
 /*
  * This file is not part of original USBProxy.
  * Sub-class of Command. 
- * Writes a string as a keyboard will do. Characters without modifiers are sent in a single packet to speed up typing.
- * Param is a double-quote delimited string with the text to write.
+ * Writes a string as a keyboard will do. Param is a double-quote delimited string with the text to write.
  *
  * Author: Skazza
  */
@@ -15,7 +14,6 @@ CommandWrite::~CommandWrite() {}
 
 std::list<__u8 *> * CommandWrite::preparePayLoad(std::string stringToWrite, __u16 maxPacketSize) {
 	std::list<__u8 *> * payLoad = new std::list<__u8 *>;
-	std::list<__u8 *> * tempPayload = new std::list<__u8 *>;
 
 	for(unsigned int i = 0; i < stringToWrite.length(); ++i) {
 		__u8 * packetPressed = (__u8 *) calloc(maxPacketSize, sizeof(__u8));
@@ -24,39 +22,8 @@ std::list<__u8 *> * CommandWrite::preparePayLoad(std::string stringToWrite, __u1
 		packetPressed[0x00] = firstAndThirdByte.first;
 		packetPressed[0x02] = firstAndThirdByte.second;
 
-		tempPayload->push_back(packetPressed);
+		payLoad->push_back(packetPressed);
 	}
-
-	/* Combines two non-modified keys into a single packet */
-	for(std::list<__u8 *>::iterator it = tempPayload->begin(); it != tempPayload->end(); ++it) {
-		std::list<__u8 *>::iterator nextPacket = std::next(it, 1);
-		__u8 * packetPressed = NULL;
-
-		if(nextPacket != tempPayload->end()) {
-			if((*it)[0x00] == 0x00 && (*nextPacket)[0x00] == 0x00) {
-				packetPressed = (__u8 *) calloc(maxPacketSize, sizeof(__u8));
-				packetPressed[0x02] = (*nextPacket)[0x02];
-				packetPressed[0x03] = (*it)[0x02];
-			}
-		}
-
-		payLoad->push_back(*it);
-		if(packetPressed) {
-			payLoad->push_back(packetPressed);
-			__u8 thirdByte = packetPressed[0x03];
-			
-			packetPressed = (__u8 *) calloc(maxPacketSize, sizeof(__u8));
-			packetPressed[0x02] = thirdByte;
-			payLoad->push_back(packetPressed);
-
-			++it;
-		}
-
-		__u8 * packetReleased = (__u8 *) calloc(maxPacketSize, sizeof(__u8));
-		payLoad->push_back(packetReleased);
-	}
-
-	delete(tempPayload);
 
 	return payLoad;
 }

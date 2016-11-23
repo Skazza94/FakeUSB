@@ -1,8 +1,7 @@
 /*
  * This file is not part of original USBProxy.
  * Sub-class of Command. 
- * Writes a string as a keyboard will do. Characters without modifiers are sent in a single packet to speed up typing.
- * Param is a double-quote delimited string with the text to write.
+ * Writes a string as a keyboard will do. Param is a double-quote delimited string with the text to write.
  *
  * Author: Skazza
  */

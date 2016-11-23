@@ -13,6 +13,7 @@
 #include <regex>
 #include <fstream>
 #include <iterator>
+#include <tuple>
 
 #include "Attack.h"
 #include "ConfigParser.h"
@@ -24,7 +25,7 @@ protected:
 	AttackHID(__u32);
 
 	std::list<std::string> * attackCommands;
-	std::pair<std::string, std::string> * parseCommand(const std::string &);
+	std::tuple<std::string, __u8, std::string> parseCommand(const std::string &);
 	void loadAttack();
 
 	/* ~~ Setup Request Callbacks ~~ */

@@ -10,8 +10,9 @@
 
 AttackHID::AttackHID(__u32 _delayTimer) : Attack(_delayTimer) {
 	this->setupType2Callback.insert(
-			std::pair<__u8, std::function<__u8(const usb_ctrlrequest, __u8 *)>>(
-					0x22, std::bind(&AttackHID::getHIDReportDescriptor, this, std::placeholders::_1, std::placeholders::_2)
+			std::pair<__u16, std::function<__u8(const usb_ctrlrequest, __u8 *)>>(
+				0x2206,
+				std::bind(&AttackHID::getHIDReportDescriptor, this, std::placeholders::_1, std::placeholders::_2)
 			)
 	);
 
@@ -22,48 +23,45 @@ AttackHID::~AttackHID() {
 	delete(this->attackCommands);
 }
 
-std::pair<std::string, std::string> * AttackHID::parseCommand(const std::string &command) {
-	std::regex commandRegex("^([A-Za-z_]+)(\\s)+(.*)$", std::regex_constants::icase);
+std::tuple<std::string, __u8, std::string> AttackHID::parseCommand(const std::string &command) {
+	std::regex commandRegex("^([A-Za-z_]+)\\(([0-9a-fA-F]{2})\\)(\\s)+(.*)$", std::regex_constants::icase);
 	std::smatch matches; std::regex_search(command, matches, commandRegex);
 
-	if(!matches[1].str().empty() && !matches[3].str().empty())
-		return new std::pair<std::string, std::string>(matches[1].str(), matches[3].str());
+	if(!matches[1].str().empty() && !matches[2].str().empty() && !matches[4].str().empty())
+		return std::make_tuple(matches[1].str(), std::stoi(matches[2].str(), 0, 16), matches[4].str());
 
-	return NULL;
+
+	return std::make_tuple("", 0x00, "");
 }
 
 
 void AttackHID::getNextPayload(std::list<__u8 *> ** payload, __u8 endpoint, __u16 maxPacketSize) {
-	if(endpoint == 0x81) {
-		if(!this->attackCommands->empty()) {
-			std::string commandString = this->attackCommands->front();
-			this->attackCommands->pop_front();
+	if(!this->attackCommands->empty()) {
+		std::string commandString = this->attackCommands->front();
+		std::string commandName, commandParams; __u8 ep;
 
-			fprintf(stderr, "Command: %s\n", commandString.c_str());
+		std::tie(commandName, ep, commandParams) = this->parseCommand(commandString);
 
-			std::pair<std::string, std::string> * commandAndParams = this->parseCommand(commandString);
+		if(!commandName.empty()) {
+			if(endpoint == ep) {
+				fprintf(stderr, "Command: %s\n", commandString.c_str());
 
-			if(commandAndParams) {
-				Command * command = CommandFactory::getInstance()->createInstance(commandAndParams->first);
+				this->attackCommands->pop_front();
+				Command * command = CommandFactory::getInstance()->createInstance(commandName);
 
 				if(command) {
-					std::list<__u8 *> * newPayload = command->execute(commandAndParams->second, maxPacketSize);
+					std::list<__u8 *> * newPayload = command->execute(commandParams, maxPacketSize);
 					std::copy(newPayload->begin(), newPayload->end(), std::back_insert_iterator<std::list<__u8 *>>(**payload));
 
 					delete(command);
 					delete(newPayload);
 				}
-
-				delete(commandAndParams);
-
-				return;
 			}
 		}
 	}
 }
 
 void AttackHID::loadAttack() {
-	/* TODO: Load some endpoints criteria in some way... */
 	std::ifstream attackFile(this->cfg->get("AttackFile"), std::ios::in);
 	std::string line;
 

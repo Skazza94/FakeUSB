@@ -158,7 +158,11 @@ std::map<std::string, __u8> key2USBByte {
 	{"ESC", 0x29},
 	{"TAB", 0x2b},
 	{"CAPSL", 0x39},
-	{"CONTEXTUAL", 0x65}
+	{"CONTEXTUAL", 0x65},
+	{"ARRWUP", 0x52},
+	{"ARRWDOWN", 0x51},
+	{"ARRWLEFT", 0x50},
+	{"ARRWRIGHT", 0x4f}
 };
 
 std::map<std::string, __u8> mod2USBByte {

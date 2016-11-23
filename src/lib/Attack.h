@@ -2,6 +2,7 @@
  * This file is not part of original USBProxy.
  * This class is cool. Really. What we do here is:
  * - For Setup Requests: store a map with the descriptor type field (took from the setup packet) as key and a callback function to execute as value.
+ * - For Device Requests: store a map with an __u16 (what it means depends from the USB protocol used) as key and a callback function to execute as value.
  * When a packet arrives, we know exactly what respond to that request because we have a specific callback function that does the job for us.
  *
  * Author: Skazza
@@ -37,7 +38,10 @@ protected:
 
 	virtual void loadAttack() = 0;
 
-	std::map<__u8, std::function<__u8(const usb_ctrlrequest, __u8 *)>> setupType2Callback;
+	/* This map handles setup requests */
+	std::map<__u16, std::function<__u8(const usb_ctrlrequest, __u8 *)>> setupType2Callback;
+	/* This map handles specific device requests */
+	std::map<__u16, std::function<__u8(__u8 *, __u8 *)>> deviceRequest2Callback;
 
 	/* ~~ Setup Request Callbacks ~~ */
 	__u8 getStringDescriptor(const usb_ctrlrequest, __u8 *);
@@ -45,9 +49,12 @@ protected:
 public:
 	virtual ~Attack();
 
-	int parseSetupRequest(const usb_ctrlrequest, int *, __u8 *);
+	/* Needed because constructor is no-arg for Factory */
 	void setDevice(Device * device) { this->device = device; }
 	void setCfgParser(ConfigParser * cfg) { this->cfg = cfg; }
+
+	int parseSetupRequest(const usb_ctrlrequest, int *, __u8 *);
+	virtual void parseDeviceRequest(__u8, __u16, __u8 *, int, std::list<__u8 *> **) { }
 
 	virtual void getNextPayload(std::list<__u8 *> **, __u8, __u16) = 0;
 

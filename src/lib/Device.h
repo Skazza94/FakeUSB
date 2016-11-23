@@ -68,6 +68,7 @@ public:
 	void set_device_qualifier(DeviceQualifier* _qualifier);
 	bool is_highspeed();
 	const definition_error is_defined();
+	DeviceProxy * getDeviceProxy();
 };
 
 #endif /* USBPROXY_DEVICE_H */

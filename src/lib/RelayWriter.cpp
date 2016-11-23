@@ -107,7 +107,20 @@ void RelayWriter::relay_write_setup() {
 		} else { //host->device
 			length=ctrl_req.wLength;
 			s->transmit_in = (deviceProxy->control_request(&(s->ctrl_req), &length, s->data, TRANSMIT_TIMEOUT_MS) >= 0);
-			if (s->ctrl_req.bRequest==9 && s->ctrl_req.bRequestType==0) {manager->setConfig(s->ctrl_req.wValue);}
+			if (s->ctrl_req.bRequest==9 && s->ctrl_req.bRequestType==0) {
+				std::map<__u8, bool>::iterator it = configAlreadyRequested.find(ctrl_req.bRequestType);
+
+				if(it != configAlreadyRequested.end()) {
+					if(!(*it).second) {
+						manager->setConfig(s->ctrl_req.wValue);
+						configAlreadyRequested[ctrl_req.bRequestType] = true;
+					}
+				} else {
+					manager->setConfig(s->ctrl_req.wValue);
+					configAlreadyRequested.insert(std::pair<__u8, bool>(ctrl_req.bRequestType, true));
+				}
+
+			}
 			s->ctrl_req.wLength=0;
 		}
 		for(;j<filters.size() && s->filter_in; j++)

@@ -260,7 +260,7 @@ void Device::print(__u8 tabs) {
 void Device::add_string(USBString* string) {
 	__u8 index=string->get_index();
 	__u16 languageId=string->get_languageId();
-	if (index||languageId) add_language(languageId);
+	//if (index||languageId) add_language(languageId);
 	if (index>maxStringIdx) {
 		USBString*** newStrings=(USBString ***)calloc(index+1,sizeof(*newStrings));
 		if (strings) {
@@ -471,4 +471,8 @@ const definition_error Device::is_defined() {
 	}
 
 	return definition_error();
+}
+
+DeviceProxy* Device::getDeviceProxy() {
+	return this->proxy;
 }

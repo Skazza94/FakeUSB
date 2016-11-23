@@ -8,12 +8,14 @@
 #include <linux/usb/ch9.h>
 #include "Proxy.h"
 #include "Device.h"
+#include "Attack.h"
 
 class Configuration;
 
 class DeviceProxy : public Proxy {
-private:
+protected:
 	Device * device = NULL;
+	Attack* attack = NULL;
 
 public:
 	static const __u8 plugin_type=PLUGIN_DEVICEPROXY;
@@ -27,6 +29,7 @@ public:
 	virtual ~DeviceProxy() {}
 
 	void setDevice(Device * device) { this->device = device; }
+	void setAttack(Attack * attack) { this->attack = attack; }
 
 	//return ETIMEDOUT if it times out
 	virtual int connect(int timeout=250)=0;

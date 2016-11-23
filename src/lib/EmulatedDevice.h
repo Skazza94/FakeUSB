@@ -1,15 +1,14 @@
 /*
- * EmulatedDevice.h
+ * This file is not part of original USBProxy.
+ * Emulates a real Device, loading the config file obtained pasting in a sequential file all the USB structs.
  *
- *  Created on: 04 nov 2016
- *      Author: skazza
+ * Author: Skazza
  */
 
 #ifndef USBPROXY_EMULATEDDEVICE_H
 #define USBPROXY_EMULATEDDEVICE_H
 
 #include <stdio.h>
-#include <sstream>
 #include <string.h>
 
 #include "Device.h"

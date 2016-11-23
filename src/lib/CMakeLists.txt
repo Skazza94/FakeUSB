@@ -28,6 +28,20 @@ set(cpp_sources
 	${CMAKE_CURRENT_SOURCE_DIR}/RelayWriter.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/USBString.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/EmulatedDevice.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Attack.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/AttackHID.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/AttackHIDKeyboard.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/AttackHIDMouse.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/AttackHIDMultimedia.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/AttackMassStorage.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Command.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/KeyMap.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/CommandWrite.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/CommandPressKeys.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/CommandDelay.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/CommandClick.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/CommandMoveAndClick.cpp	
+	${CMAKE_CURRENT_SOURCE_DIR}/CommandMove.cpp
 	CACHE INTERNAL "List of CPP sources")
 
 set(c_sources
@@ -57,7 +71,25 @@ set(headers
 	${CMAKE_CURRENT_SOURCE_DIR}/Packet.h
 	${CMAKE_CURRENT_SOURCE_DIR}/Proxy.h
 	${CMAKE_CURRENT_SOURCE_DIR}/USBString.h
+	${CMAKE_CURRENT_SOURCE_DIR}/Singleton.hpp
 	${CMAKE_CURRENT_SOURCE_DIR}/EmulatedDevice.h
+	${CMAKE_CURRENT_SOURCE_DIR}/Factory.hpp
+	${CMAKE_CURRENT_SOURCE_DIR}/AttackFactory.hpp
+	${CMAKE_CURRENT_SOURCE_DIR}/CommandFactory.hpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Attack.h
+	${CMAKE_CURRENT_SOURCE_DIR}/AttackHID.h
+	${CMAKE_CURRENT_SOURCE_DIR}/AttackHIDKeyboard.h
+	${CMAKE_CURRENT_SOURCE_DIR}/AttackHIDMouse.h
+	${CMAKE_CURRENT_SOURCE_DIR}/AttackHIDMultimedia.h
+	${CMAKE_CURRENT_SOURCE_DIR}/AttackMassStorage.h
+	${CMAKE_CURRENT_SOURCE_DIR}/Command.h
+	${CMAKE_CURRENT_SOURCE_DIR}/KeyMap.h
+	${CMAKE_CURRENT_SOURCE_DIR}/CommandWrite.h
+	${CMAKE_CURRENT_SOURCE_DIR}/CommandPressKeys.h
+	${CMAKE_CURRENT_SOURCE_DIR}/CommandDelay.h
+	${CMAKE_CURRENT_SOURCE_DIR}/CommandClick.h
+	${CMAKE_CURRENT_SOURCE_DIR}/CommandMoveAndClick.h
+	${CMAKE_CURRENT_SOURCE_DIR}/CommandMove.h
 	CACHE INTERNAL "List of headers")
 
 add_definitions( -DPLUGIN_PATH="${CMAKE_INSTALL_PREFIX}/lib/USBProxy/")

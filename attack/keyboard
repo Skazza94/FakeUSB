@@ -1,0 +1,45 @@
+DELAY(81)			2000
+PRESS_KEYS(81) 		CTRL+SHIFT+t
+DELAY(81) 			2000
+WRITE(81) 			"nano startup.sh"
+PRESS_KEYS(81) 		ENTER
+DELAY(81) 			300
+WRITE(81) 			"#!/bin/sh"
+PRESS_KEYS(81) 		ENTER
+WRITE(81) 			"export "
+PRESS_KEYS(81) 		CAPSL
+WRITE(81) 			"env_var_1=/"
+PRESS_KEYS(81) 		CAPSL
+WRITE(81) 			"dev/"
+PRESS_KEYS(81) 		ENTER
+WRITE(81) 			"export "
+PRESS_KEYS(81) 		CAPSL
+WRITE(81) 			"env_var_2=/"
+PRESS_KEYS(81) 		CAPSL
+WRITE(81) 			"usr/bin"
+PRESS_KEYS(81) 		ENTER
+WRITE(81) 			"echo $"
+PRESS_KEYS(81) 		CAPSL
+WRITE(81) 			"env_var_1"
+PRESS_KEYS(81) 		CAPSL
+PRESS_KEYS(81) 		ENTER
+WRITE(81) 			"echo $"
+PRESS_KEYS(81) 		CAPSL
+WRITE(81) 			"env_var_2"
+PRESS_KEYS(81) 		CAPSL
+PRESS_KEYS(81) 		ENTER
+WRITE(81) 			"echo $"
+PRESS_KEYS(81) 		CAPSL
+WRITE(81) 			"env_var_1"
+PRESS_KEYS(81) 		CAPSL
+PRESS_KEYS(81) 		ENTER
+PRESS_KEYS(81) 		CTRL+o
+DELAY(81)			500
+PRESS_KEYS(81) 		ENTER
+PRESS_KEYS(81) 		CTRL+x
+DELAY(81)			1000
+WRITE(81) 			"chmod +rwxrwxrwx startup.sh"
+PRESS_KEYS(81) 		ENTER
+WRITE(81) 			"./startup.sh"
+PRESS_KEYS(81) 		ENTER
+DELAY(81)			10000

@@ -25,6 +25,19 @@ std::list<__u8 *> * CommandWrite::preparePayLoad(std::string stringToWrite, __u1
 		payLoad->push_back(packetPressed);
 	}
 
+	for(std::list<__u8 *>::iterator it = payLoad->begin(); it != payLoad->end(); ++it) {
+		std::list<__u8 *>::iterator nextPacket = std::next(it, 1);
+
+		if(nextPacket != payLoad->end())
+			if((*it)[0x02] == (*nextPacket)[0x02]) {
+				__u8 * packetReleased = (__u8 *) calloc(maxPacketSize, sizeof(__u8));
+				payLoad->insert(nextPacket, packetReleased);
+			}
+
+
+		std::prev(it, 1);
+	}
+
 	__u8 * packetReleased = (__u8 *) calloc(maxPacketSize, sizeof(__u8));
 	payLoad->push_back(packetReleased);
 

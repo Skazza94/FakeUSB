@@ -15,6 +15,9 @@
 #include "Command.h"
 
 class CommandDelay : public Command {
+private:
+	std::list<__u8 *> * preparePayLoad(float, __u16);
+
 public:
 	CommandDelay();
 	~CommandDelay();

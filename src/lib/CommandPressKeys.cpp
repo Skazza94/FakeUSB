@@ -35,7 +35,6 @@ std::list<__u8 *> * CommandPressKeys::preparePayLoad(std::vector<std::string> * 
 	return payLoad;
 }
 
-
 std::vector<std::string> * CommandPressKeys::parseParams(const std::string &paramString) {
 	/* Matches alphanumeric chars and + sign (if present) one time */
 	std::regex paramRegex("([A-Za-z0-9]*)(\\+)?", std::regex_constants::icase);

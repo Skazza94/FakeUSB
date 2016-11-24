@@ -38,6 +38,12 @@ protected:
 
 	virtual void loadAttack() = 0;
 
+	/* We need this method because we need to map each IN endpoint with an OUT endpoint on our emulated device */
+	void mapInEpToOutEp();
+	__u8 getOutEpForInEp(__u8);
+	/* This map maps in endpoints to out endpoints, so we know on which endpoint send data */
+	std::map<__u8, __u8> inEp2OutEp;
+
 	/* This map handles setup requests */
 	std::map<__u16, std::function<__u8(const usb_ctrlrequest, __u8 *)>> setupType2Callback;
 	/* This map handles specific device requests */
@@ -54,7 +60,7 @@ public:
 	void setCfgParser(ConfigParser * cfg) { this->cfg = cfg; }
 
 	int parseSetupRequest(const usb_ctrlrequest, int *, __u8 *);
-	virtual void parseDeviceRequest(__u8, __u16, __u8 *, int, std::list<__u8 *> **) { }
+	virtual void parseDeviceRequest(__u16, __u8 *, int, std::list<__u8 *> **) { }
 
 	virtual void getNextPayload(std::list<__u8 *> **, __u8, __u16) = 0;
 

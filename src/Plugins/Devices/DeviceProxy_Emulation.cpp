@@ -8,6 +8,8 @@
 
 #include "DeviceProxy_Emulation.h"
 
+#include "HexString.h"
+
 DeviceProxy_Emulation::DeviceProxy_Emulation(ConfigParser * cfg) {
 	this->cfg = cfg;
 	this->endPoint2packetBuffer = new std::map<__u8, std::list<__u8 *> *>;
@@ -39,10 +41,23 @@ int DeviceProxy_Emulation::control_request(const usb_ctrlrequest * setup_packet,
 }
 
 void DeviceProxy_Emulation::send_data(__u8 endpoint, __u8 attributes, __u16 maxPacketSize, __u8 * dataptr, int length) {
-	std::list<__u8 *> * packetBuffer = this->getPacketBufferForEndpoint(endpoint);
-	this->attack->parseDeviceRequest(endpoint, maxPacketSize, dataptr, length, &packetBuffer);
-	this->setPacketBufferForEndpoint(packetBuffer, endpoint);
+	__u8 outEp = this->attack->getOutEpForInEp(endpoint);
 
+	if(outEp != 0xff) { /* A valid OUT endpoint has been found */
+		fprintf(stderr, "OUT endpoint for %x is: %x\n", endpoint, outEp);
+
+		std::list<__u8 *> * packetBuffer = this->getPacketBufferForEndpoint(outEp);
+		this->attack->parseDeviceRequest(maxPacketSize, dataptr, length, &packetBuffer);
+
+		fprintf(stderr, "New packet buffer is: \n");
+		for(std::list<__u8 *>::iterator it = packetBuffer->begin(); it != packetBuffer->end(); ++it) {
+			char* hex = hex_string((*it), maxPacketSize);
+			fprintf(stderr, "%s\n", hex);
+			free(hex);
+		}
+
+		this->setPacketBufferForEndpoint(packetBuffer, outEp); /* New values are assigned to the bufferzorz */
+	}
 }
 
 void DeviceProxy_Emulation::receive_data(__u8 endpoint, __u8 attributes, __u16 maxPacketSize, __u8 ** dataptr, int * length, int timeout) {
@@ -58,11 +73,11 @@ void DeviceProxy_Emulation::receive_data(__u8 endpoint, __u8 attributes, __u16 m
 
 	if(!packetBuffer->empty()) {
 		__u8 * dataArray = packetBuffer->front();
-		packetBuffer->pop_front();
 
 		memcpy(&(*dataptr), &dataArray, maxPacketSize);
 
 		*length = maxPacketSize;
+		packetBuffer->pop_front(); /* Popped after to avoid memcpy strange behaviours */
 	}
 
 	this->setPacketBufferForEndpoint(packetBuffer, endpoint);

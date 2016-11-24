@@ -25,6 +25,8 @@ protected:
 public:
 	virtual ~AttackMassStorage();
 
+	void parseDeviceRequest(__u16, __u8 *, int, std::list<__u8 *> **);
+
 	void getNextPayload(std::list<__u8 *> **, __u8, __u16);
 	/* "Creator" method used by the Factory */
 	static Attack * createInstance() { return new AttackMassStorage(); }

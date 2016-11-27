@@ -120,7 +120,7 @@ void RelayReader::relay_read() {
 	}
 
 	__u8* buf;
-	int length;
+	__u64 length;
 
 	fprintf(stderr,"Starting reader thread (%ld) for EP%02x.\n",gettid(),endpoint);
 	while (!_please_stop) {

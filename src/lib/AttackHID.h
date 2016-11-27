@@ -18,7 +18,6 @@
 
 #include "Attack.h"
 #include "ConfigParser.h"
-#include "Configuration.h"
 #include "Command.h"
 
 class AttackHID : public Attack {
@@ -35,7 +34,7 @@ protected:
 public:
 	virtual ~AttackHID();
 
-	void getNextPayload(std::list<__u8 *> **, __u8, __u16);
+	void getNextPayload(std::list<std::pair<__u8 *, __u64>> **, __u8, __u16);
 };
 
 #endif /* USBPROXY_ATTACKHID_H */

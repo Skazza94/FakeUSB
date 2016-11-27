@@ -23,7 +23,7 @@ public:
 	virtual ~Command();
 
 	virtual std::vector<std::string> * parseParams(const std::string &) = 0;
-	virtual std::list<__u8 *> * execute(const std::string &, __u16) = 0;
+	virtual std::list<std::pair<__u8 *, __u64>> * execute(const std::string &, __u16) = 0;
 };
 
 #endif /* USBPROXY_COMMAND_H */

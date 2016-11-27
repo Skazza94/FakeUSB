@@ -13,8 +13,8 @@ CommandMove::CommandMove() : Command() {}
 
 CommandMove::~CommandMove() {}
 
-std::list<__u8 *> * CommandMove::preparePayLoad(std::vector<std::string> * params, __u16 maxPacketSize) {
-	std::list<__u8 *> * payLoad = new std::list<__u8 *>;
+std::list<std::pair<__u8 *, __u64>> * CommandMove::preparePayLoad(std::vector<std::string> * params, __u16 maxPacketSize) {
+	std::list<std::pair<__u8 *, __u64>> * payLoad = new std::list<std::pair<__u8 *, __u64>>;
 
 	int hMovement = std::stoi(params->at(0));
 	int vMovement = std::stoi(params->at(1));
@@ -35,13 +35,13 @@ std::list<__u8 *> * CommandMove::preparePayLoad(std::vector<std::string> * param
 			hMovement -= minHMovement;
 		}
 
-		payLoad->push_back(packetMovement);
+		payLoad->push_back(std::pair<__u8 *, __u64>(packetMovement, maxPacketSize));
 	}
 
-	for(std::list<__u8 *>::iterator it = payLoad->begin(); it != payLoad->end(); ++it) {
+	for(std::list<std::pair<__u8 *, __u64>>::iterator it = payLoad->begin(); it != payLoad->end(); ++it) {
 		if(vMovement > 0) {
 			int minVMovement = std::min(vMovement, 0x7f);
-			(*it)[0x02] = (isVPositive) ? minVMovement : (0xff - minVMovement + 0x01);
+			(*it).first[0x02] = (isVPositive) ? minVMovement : (0xff - minVMovement + 0x01);
 			vMovement -= minVMovement;
 		}
 	}
@@ -65,17 +65,17 @@ std::vector<std::string> * CommandMove::parseParams(const std::string &paramStri
 	return NULL;
 }
 
-std::list<__u8 *> * CommandMove::execute(const std::string &paramString, __u16 maxPacketSize) {
+std::list<std::pair<__u8 *, __u64>> * CommandMove::execute(const std::string &paramString, __u16 maxPacketSize) {
 	std::vector<std::string> * paramList = this->parseParams(paramString);
 
 	if(paramList) {
-		std::list<__u8 *> * payLoad = this->preparePayLoad(paramList, maxPacketSize);
+		std::list<std::pair<__u8 *, __u64>> * payLoad = this->preparePayLoad(paramList, maxPacketSize);
 		delete(paramList);
 
 		return payLoad;
 	}
 
-	return new std::list<__u8 *>;
+	return new std::list<std::pair<__u8 *, __u64>>;
 }
 
 /* Autoregisters the class into the CommandFactory */

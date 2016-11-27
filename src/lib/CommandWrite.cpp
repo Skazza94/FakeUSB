@@ -12,8 +12,8 @@ CommandWrite::CommandWrite() : Command() {}
 
 CommandWrite::~CommandWrite() {}
 
-std::list<__u8 *> * CommandWrite::preparePayLoad(std::string stringToWrite, __u16 maxPacketSize) {
-	std::list<__u8 *> * payLoad = new std::list<__u8 *>;
+std::list<std::pair<__u8 *, __u64>> * CommandWrite::preparePayLoad(std::string stringToWrite, __u16 maxPacketSize) {
+	std::list<std::pair<__u8 *, __u64>> * payLoad = new std::list<std::pair<__u8 *, __u64>>;
 
 	for(unsigned int i = 0; i < stringToWrite.length(); ++i) {
 		__u8 * packetPressed = (__u8 *) calloc(maxPacketSize, sizeof(__u8));
@@ -22,16 +22,16 @@ std::list<__u8 *> * CommandWrite::preparePayLoad(std::string stringToWrite, __u1
 		packetPressed[0x00] = firstAndThirdByte.first;
 		packetPressed[0x02] = firstAndThirdByte.second;
 
-		payLoad->push_back(packetPressed);
+		payLoad->push_back(std::pair<__u8 *, __u64>(packetPressed, maxPacketSize));
 	}
 
-	for(std::list<__u8 *>::iterator it = payLoad->begin(); it != payLoad->end(); ++it) {
-		std::list<__u8 *>::iterator nextPacket = std::next(it, 1);
+	for(std::list<std::pair<__u8 *, __u64>>::iterator it = payLoad->begin(); it != payLoad->end(); ++it) {
+		std::list<std::pair<__u8 *, __u64>>::iterator nextPacket = std::next(it, 1);
 
 		if(nextPacket != payLoad->end())
-			if((*it)[0x02] == (*nextPacket)[0x02]) {
+			if((*it).first[0x02] == (*nextPacket).first[0x02]) {
 				__u8 * packetReleased = (__u8 *) calloc(maxPacketSize, sizeof(__u8));
-				payLoad->insert(nextPacket, packetReleased);
+				payLoad->insert(nextPacket, std::pair<__u8 *, __u64>(packetReleased, maxPacketSize));
 			}
 
 
@@ -39,7 +39,7 @@ std::list<__u8 *> * CommandWrite::preparePayLoad(std::string stringToWrite, __u1
 	}
 
 	__u8 * packetReleased = (__u8 *) calloc(maxPacketSize, sizeof(__u8));
-	payLoad->push_back(packetReleased);
+	payLoad->push_back(std::pair<__u8 *, __u64>(packetReleased, maxPacketSize));
 
 	return payLoad;
 }
@@ -59,17 +59,17 @@ std::vector<std::string> * CommandWrite::parseParams(const std::string &paramStr
 	return NULL;
 }
 
-std::list<__u8 *> * CommandWrite::execute(const std::string &paramString, __u16 maxPacketSize) {
+std::list<std::pair<__u8 *, __u64>> * CommandWrite::execute(const std::string &paramString, __u16 maxPacketSize) {
 	std::vector<std::string> * paramList = this->parseParams(paramString);
 
 	if(paramList) {
-		std::list<__u8 *> * payLoad = this->preparePayLoad(paramList->at(0), maxPacketSize);
+		std::list<std::pair<__u8 *, __u64>> * payLoad = this->preparePayLoad(paramList->at(0), maxPacketSize);
 		delete(paramList);
 
 		return payLoad;
 	}
 
-	return new std::list<__u8 *>;
+	return new std::list<std::pair<__u8 *, __u64>>;
 }
 
 /* Autoregisters the class into the CommandFactory */

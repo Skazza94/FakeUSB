@@ -12,16 +12,15 @@ CommandClick::CommandClick() : Command() {}
 
 CommandClick::~CommandClick() {}
 
-std::list<__u8 *> * CommandClick::preparePayLoad(std::string params, __u16 maxPacketSize) {
-	std::list<__u8 *> * payLoad = new std::list<__u8 *>;
+std::list<std::pair<__u8 *, __u64>> * CommandClick::preparePayLoad(std::string params, __u16 maxPacketSize) {
+	std::list<std::pair<__u8 *, __u64>> * payLoad = new std::list<std::pair<__u8 *, __u64>>;
 
 	__u8 * packet = (__u8 *) calloc(maxPacketSize, sizeof(__u8));
-
 	packet[0x00] = findButton(params.at(0));
-	payLoad->push_back(packet);
+	payLoad->push_back(std::pair<__u8 *, __u64>(packet, maxPacketSize));
 	
 	packet = (__u8 *) calloc(maxPacketSize, sizeof(__u8));
-	payLoad->push_back(packet);
+	payLoad->push_back(std::pair<__u8 *, __u64>(packet, maxPacketSize));
 
 	return payLoad;
 }
@@ -41,17 +40,17 @@ std::vector<std::string> * CommandClick::parseParams(const std::string &paramStr
 	return NULL;
 }
 
-std::list<__u8 *> * CommandClick::execute(const std::string &paramString, __u16 maxPacketSize) {
+std::list<std::pair<__u8 *, __u64>> * CommandClick::execute(const std::string &paramString, __u16 maxPacketSize) {
 	std::vector<std::string> * paramList = this->parseParams(paramString);
 
 	if(paramList) {
-		std::list<__u8 *> * payLoad = this->preparePayLoad(paramList->at(0), maxPacketSize);
+		std::list<std::pair<__u8 *, __u64>> * payLoad = this->preparePayLoad(paramList->at(0), maxPacketSize);
 		delete(paramList);
 
 		return payLoad;
 	}
 
-	return new std::list<__u8 *>;
+	return new std::list<std::pair<__u8 *, __u64>>;
 }
 
 /* Autoregisters the class into the CommandFactory */

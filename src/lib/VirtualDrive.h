@@ -10,6 +10,7 @@
 #define USBPROXY_VIRTUALDRIVE_H
 
 #include <string>
+#include <thread>
 #include <stdio.h>
 #include <string.h>
 
@@ -21,6 +22,11 @@ private:
 	const __u32 blockSize = 512;
 	__u64 LBA = 0x00;
 	__u64 realSize = 0x00;
+
+	__u8 writeCount = 0;
+	bool writeLock = false;
+	bool stopThread = false;
+	void flushEdits();
 
 	__u8 * driveContent = NULL;
 

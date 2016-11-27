@@ -13,9 +13,12 @@ VirtualDrive::VirtualDrive(std::string location) {
 	this->calculateSize();
 
 	this->driveContent = this->readFile();
+
+	std::thread t = std::thread(&VirtualDrive::flushEdits, this); t.detach();
 }
 
 VirtualDrive::~VirtualDrive() {
+	this->stopThread = true;
 	this->writeFile();
 
 	free(this->driveContent);
@@ -56,6 +59,8 @@ __u8 * VirtualDrive::readBlock(__u64 LBAFrom, __u64 * nBlocks, __u32 offset) {
 }
 
 void VirtualDrive::writeBlock(__u8 * data, __u64 LBAFrom, __u64 length, __u32 offset) {
+	while(this->writeLock); /* While we're writing the file to flush edits, we cannot write until it's finished */
+
 	LBAFrom = (LBAFrom * blockSize) + (offset * blockSize);
 
 	if(!this->driveContent)
@@ -67,6 +72,21 @@ void VirtualDrive::writeBlock(__u8 * data, __u64 LBAFrom, __u64 length, __u32 of
 																  /* We copy if blocksCount < length or if the LBA we're reading is < max LBA */
 		this->driveContent[LBACounter] = data[blocksCount];
 		blocksCount++; LBACounter++;
+	}
+
+	this->writeCount++;
+}
+
+/* Each 40 writes we flush the edits, writing them into the file */
+void VirtualDrive::flushEdits() {
+	while(!this->stopThread) {
+		if(this->writeCount > 40) {
+			this->writeLock = true;
+			this->writeFile();
+			this->writeLock = false;
+
+			this->writeCount = 0;
+		}
 	}
 }
 

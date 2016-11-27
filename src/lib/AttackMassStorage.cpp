@@ -113,6 +113,7 @@ void AttackMassStorage::loadAttack() {
 	this->virtualDrive = new VirtualDrive(virtualDriveFile);
 }
 
+/* Builds a CSW packet, with signature, CBW tag and the desired status */
 __u8 * AttackMassStorage::buildCSWPacket(__u32 tag, __u8 status) {
 	MS_CommandStatusWrapper_t * csw = new MS_CommandStatusWrapper_t;
 	csw->Signature = MS_CSW_SIGNATURE;
@@ -124,7 +125,7 @@ __u8 * AttackMassStorage::buildCSWPacket(__u32 tag, __u8 status) {
 }
 
 void AttackMassStorage::parseDeviceRequest(__u16 maxPacketSize, __u8 * dataPtr, __u64 length, std::list<std::pair<__u8 *, __u64>> ** packetBuffer) {
-    /* We get the CBW packets to handle commands */
+	/* Process the CBW packets to handle commands */
     if ((length == 31) &&
     	(dataPtr[0x00] == 0x55) &&
     	(dataPtr[0x01] == 0x53) &&
@@ -144,11 +145,11 @@ void AttackMassStorage::parseDeviceRequest(__u16 maxPacketSize, __u8 * dataPtr, 
 
     /* If it's not a CBW packet, a previous WRITE command has been submitted...
      * If we set the startingWriteLBA into the scsiWrite10 method, it will be surely different from 0xffffffffffffffff
-     * (because we have a drive size < than 0xffffffffffffffff), so we write data to the virtual drive file.
-     * Then we set the startingWriteLBA to 0xffffffffffffffff again to avoid double writes and stuff. */
+     * (because we have a drive size < than 0xffffffffffffffff), so we write data in the virtual drive file.
+     * Since we receive 512 byte blocks, we "iterate" in the writing operation, incrementing the written blocks (used as offset). */
     if(this->startingWriteLBA != 0xffffffffffffffff) {
-    	this->virtualDrive->write(dataPtr, this->startingWriteLBA, length);
-    	this->startingWriteLBA = 0xffffffffffffffff;
+    	this->virtualDrive->writeBlock(dataPtr, this->startingWriteLBA, length, this->writtenBlocks);
+    	this->writtenBlocks++;
 
     	return;
     }
@@ -268,12 +269,19 @@ void AttackMassStorage::scsiRead10(__u8 * dataPtr, std::list<std::pair<__u8 *, _
 	MS_CommandBlockWrapper_t * cbw = new MS_CommandBlockWrapper_t;
 	memcpy(cbw, dataPtr, MS_CBW_SIZE);
 
-	__u64 startingReadLBA = cbw->SCSICommandData[0x02] << 24 | cbw->SCSICommandData[0x03] << 16 | cbw->SCSICommandData [0x04] << 8 | cbw->SCSICommandData[0x05];
+	__u64 startingReadLBA = cbw->SCSICommandData[0x02] << 24 | cbw->SCSICommandData[0x03] << 16 | cbw->SCSICommandData[0x04] << 8 | cbw->SCSICommandData[0x05];
 	__u64 blocksToRead = (cbw->SCSICommandData[0x07] << 8) | cbw->SCSICommandData[0x08];
 
-	__u8 * dataFromDrive = this->virtualDrive->read(startingReadLBA, &blocksToRead);
+	/* Send back the data in 512 byte packets */
+	__u32 readBlocks = 0x00;
+	while(readBlocks < blocksToRead) {
+		__u64 blockSize = 0x00;
+		__u8 * dataFromDrive = this->virtualDrive->readBlock(startingReadLBA, &blockSize, readBlocks);
+		(*packetBuffer)->push_back(std::pair<__u8 *, __u64>(dataFromDrive, blockSize));
 
-	(*packetBuffer)->push_back(std::pair<__u8 *, __u64>(dataFromDrive, blocksToRead));
+		readBlocks++;
+	}
+
 	(*packetBuffer)->push_back(std::pair<__u8 *, __u64>(this->buildCSWPacket(cbw->Tag, MS_SCSI_COMMAND_Pass), MS_CSW_SIZE));
 
 	delete(cbw);
@@ -283,8 +291,10 @@ void AttackMassStorage::scsiWrite10(__u8 * dataPtr, std::list<std::pair<__u8 *, 
 	MS_CommandBlockWrapper_t * cbw = new MS_CommandBlockWrapper_t;
 	memcpy(cbw, dataPtr, MS_CBW_SIZE);
 
-	/* Set the startingWriteLBA, waiting for data on this endpoint */
-	this->startingWriteLBA = cbw->SCSICommandData[0x02] << 24 | cbw->SCSICommandData[0x03] << 16 | cbw->SCSICommandData [0x04] << 8 | cbw->SCSICommandData[0x05];
+	/* Set the startingWriteLBA and write length, waiting for data on this endpoint */
+	this->startingWriteLBA = cbw->SCSICommandData[0x02] << 24 | cbw->SCSICommandData[0x03] << 16 | cbw->SCSICommandData[0x04] << 8 | cbw->SCSICommandData[0x05];
+	this->writeLength = (cbw->SCSICommandData[0x07] << 8) | cbw->SCSICommandData[0x08];
+	this->writtenBlocks = 0x00; /* Reset the written blocks */
 
 	(*packetBuffer)->push_back(std::pair<__u8 *, __u64>(this->buildCSWPacket(cbw->Tag, MS_SCSI_COMMAND_Pass), MS_CSW_SIZE));
 	delete(cbw);

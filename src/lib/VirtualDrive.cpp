@@ -1,77 +1,73 @@
 /*
- * VirtualDrive.cpp
+ * This file is not part of original USBProxy.
+ * This class emulated a drive, mapping a whole file into memory, reading/writing blocks into this memory area.
+ * When we finish our operations, the memory area is written back into the file.
  *
- *  Created on: 27 nov 2016
- *      Author: skazza
+ * Author: Skazza
  */
 
 #include "VirtualDrive.h"
 
-#include "HexString.h"
-
 VirtualDrive::VirtualDrive(std::string location) {
 	this->driveLocation = location;
-
 	this->calculateSize();
+
+	this->driveContent = this->readFile();
 }
 
-VirtualDrive::~VirtualDrive() {}
+VirtualDrive::~VirtualDrive() {
+	this->writeFile();
+
+	free(this->driveContent);
+}
 
 void VirtualDrive::calculateSize() {
 	FILE * virtualDrive = fopen(this->driveLocation.c_str(), "rb");
 
 	fseek(virtualDrive, 0, SEEK_END);
-	this->LBA = (ftell(virtualDrive) / blockSize) - 1; /* The drive capacity in SCSI is calculated as file size * block size - 1 */
-	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 /* we subtract 1 to round the result. */
+	this->realSize = ftell(virtualDrive);
+	this->LBA = (this->realSize / blockSize); /* The drive capacity in SCSI is calculated as file size * block size */
 
 	fclose(virtualDrive);
 }
 
-__u8 * VirtualDrive::read(__u64 LBAFrom, __u64 * nBlocks) {
-	FILE * virtualDrive = fopen(this->driveLocation.c_str(), "rb");
+__u8 * VirtualDrive::readBlock(__u64 LBAFrom, __u64 * nBlocks, __u32 offset) {
+	/* Convert starting LBA and nBlocks multipling the block size (and adding offset if present) */
+	LBAFrom = (LBAFrom * blockSize) + (offset * blockSize);
+	(*nBlocks) = blockSize;
 
-	if(!virtualDrive) { /* If file is not opened, we return nothing */
+	if(!this->driveContent) {
 		(*nBlocks) = 0;
 
 		return NULL;
 	}
 
-	/* Convert starting LBA and nBlocks multipling the valid block size */
-	LBAFrom *= blockSize;
-	(*nBlocks) *= blockSize;
+	__u8 * dataFromDrive = (__u8 *) calloc(blockSize, sizeof(__u8)); /* Allocate buffer */
 
-	rewind(virtualDrive); /* Move to the start, just in case */
-	fseek(virtualDrive, LBAFrom, SEEK_CUR); /* Move to the desired LBA */
+	__u64 blocksCount = 0; __u64 LBACounter = LBAFrom;
+	/* Copy desired blocks from memory */
+	while(blocksCount < blockSize && LBACounter <= this->realSize) { /* Bounds checking to avoid overflows. */
+																	 /* We copy if blocksCount < blockSize or if the LBA we're reading is < max LBA */
+		dataFromDrive[blocksCount] = this->driveContent[LBACounter];
+		blocksCount++; LBACounter++;
+	}
 
-	/* Read data and return them */
-	__u8 * dataFromDrive = (__u8 *) calloc((*nBlocks), sizeof(__u8));
-	fread(dataFromDrive, sizeof(__u8), (*nBlocks), virtualDrive);
-
-	fclose(virtualDrive);
 	return dataFromDrive;
 }
 
-void VirtualDrive::write(__u8 * data, __u64 LBAFrom, __u64 length) {
-	/* Add a queue with a thread here, to avoid double writes on the same block */
+void VirtualDrive::writeBlock(__u8 * data, __u64 LBAFrom, __u64 length, __u32 offset) {
+	LBAFrom = (LBAFrom * blockSize) + (offset * blockSize);
 
-	FILE * virtualDrive = fopen(this->driveLocation.c_str(), "rb+");
-
-	if(!virtualDrive) /* If file is not opened, we do nothing */
+	if(!this->driveContent)
 		return;
 
-	LBAFrom *= blockSize;
-
-	char* hex=hex_string(&LBAFrom,sizeof(__u64));
-	printf("__________LBA From: %s\n", hex);
-	free(hex);
-
-	rewind(virtualDrive); /* Move to the start, just in case */
-	fseek(virtualDrive, LBAFrom, SEEK_CUR); /* Move to the desired LBA */
-
-	for(__u64 i = 0; i < length; i++)
-		fwrite(&data[i], sizeof(__u8), 1, virtualDrive); /* Write data into the virtual file */
-
-	fclose(virtualDrive);
+	__u64 blocksCount = 0; __u64 LBACounter = LBAFrom;
+	/* Copy new blocks into memory */
+	while(blocksCount < length && LBACounter <= this->realSize) { /* Bounds checking to avoid overflows. */
+																  /* We copy if blocksCount < length or if the LBA we're reading is < max LBA */
+		this->driveContent[LBACounter] = data[blocksCount];
+		blocksCount++; LBACounter++;
+	}
 }
 
 __u32 VirtualDrive::getLBA() {
@@ -80,4 +76,29 @@ __u32 VirtualDrive::getLBA() {
 
 __u32 VirtualDrive::getBlockSize() {
 	return this->blockSize;
+}
+
+__u8 * VirtualDrive::readFile() {
+	__u8 * data = (__u8 *) calloc(this->realSize, sizeof(__u8));
+
+	FILE * virtualDrive = fopen(this->driveLocation.c_str(), "rb");
+	if(!virtualDrive) /* If file is not opened, we do nothing */
+		return NULL;
+
+	rewind(virtualDrive);
+	fread(data, sizeof(__u8), this->realSize, virtualDrive); /* Read the whole file (which is the drive to emulate) into a memory area */
+
+	fclose(virtualDrive);
+	return data;
+}
+
+void VirtualDrive::writeFile() {
+	FILE * virtualDrive = fopen(this->driveLocation.c_str(), "wb");
+	if(!virtualDrive) /* If file is not opened, we do nothing */
+		return;
+
+	rewind(virtualDrive);
+	fwrite(this->driveContent, sizeof(__u8), this->realSize, virtualDrive); /* Write back the memory area in the drive file  */
+
+	fclose(virtualDrive);
 }

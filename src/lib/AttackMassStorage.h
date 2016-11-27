@@ -23,6 +23,8 @@ private:
 	SCSI_Inquiry_Response_t * inquiryData = NULL;
 	SCSI_Request_Sense_Response_t * senseData = NULL;
 	__u64 startingWriteLBA = 0xffffffffffffffff; /* Used when a WRITE CBW is submitted */
+	__u64 writeLength = 0xffffffffffffffff; /* Used when a WRITE CBW is submitted */
+	__u32 writtenBlocks = 0x00; /* Used when a WRITE CBW is submitted */
 	VirtualDrive * virtualDrive = NULL;
 
 	void loadAttack();

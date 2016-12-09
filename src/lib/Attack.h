@@ -19,6 +19,7 @@
 
 #include "AttackFactory.hpp"
 #include "Device.h"
+#include "Configuration.h"
 #include "USBString.h"
 #include "ConfigParser.h"
 
@@ -38,10 +39,15 @@ protected:
 
 	virtual void loadAttack() = 0;
 
+	/* We need this method because we need to map each IN endpoint with an OUT endpoint on our emulated device */
+	void mapOutEpToInEp();
+	/* This map maps in endpoints to out endpoints, so we know on which endpoint send data */
+	std::map<__u8, __u8> outEp2InEp;
+
 	/* This map handles setup requests */
 	std::map<__u16, std::function<__u8(const usb_ctrlrequest, __u8 *)>> setupType2Callback;
 	/* This map handles specific device requests */
-	std::map<__u16, std::function<__u8(__u8 *, __u8 *)>> deviceRequest2Callback;
+	std::map<__u16, std::function<void(__u8 *, std::list<std::pair<__u8 *, __u64>> **)>> deviceRequest2Callback;
 
 	/* ~~ Setup Request Callbacks ~~ */
 	__u8 getStringDescriptor(const usb_ctrlrequest, __u8 *);
@@ -54,9 +60,11 @@ public:
 	void setCfgParser(ConfigParser * cfg) { this->cfg = cfg; }
 
 	int parseSetupRequest(const usb_ctrlrequest, int *, __u8 *);
-	virtual void parseDeviceRequest(__u8, __u16, __u8 *, int, std::list<__u8 *> **) { }
+	virtual void parseDeviceRequest(__u16, __u8 *, __u64, std::list<std::pair<__u8 *, __u64>> **) { }
 
-	virtual void getNextPayload(std::list<__u8 *> **, __u8, __u16) = 0;
+	virtual void getNextPayload(std::list<std::pair<__u8 *, __u64>> **, __u8, __u16) = 0;
+
+	__u8 getInEpForOutEp(__u8);
 
 	void startAttack();
 	bool canStartAttack() { if(DELAY_TIMER) DELAY_TIMER--; return this->canAttack && (DELAY_TIMER == 0); }

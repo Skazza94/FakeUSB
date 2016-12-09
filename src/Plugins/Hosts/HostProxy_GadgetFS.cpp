@@ -300,7 +300,7 @@ int HostProxy_GadgetFS::control_request(usb_ctrlrequest *setup_packet, int *nbyt
 }
 
 
-void HostProxy_GadgetFS::send_data(__u8 endpoint,__u8 attributes,__u16 maxPacketSize,__u8* dataptr,int length) {
+void HostProxy_GadgetFS::send_data(__u8 endpoint,__u8 attributes,__u16 maxPacketSize,__u8* dataptr,__u64 length) {
 	if (!endpoint) {
 		int rc=write(p_device_file,dataptr,length);
 		if (rc<0) {
@@ -384,7 +384,7 @@ bool HostProxy_GadgetFS::send_wait_complete(__u8 endpoint,int timeout) {
 	}
 }
 
-void HostProxy_GadgetFS::receive_data(__u8 endpoint,__u8 attributes,__u16 maxPacketSize,__u8** dataptr, int* length, int timeout) {
+void HostProxy_GadgetFS::receive_data(__u8 endpoint,__u8 attributes,__u16 maxPacketSize,__u8** dataptr, __u64* length, int timeout) {
 	if (!endpoint) {
 		fprintf(stderr,"trying to receive %d bytes on EP00\n",*length);
 		return;

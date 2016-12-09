@@ -35,7 +35,7 @@ std::tuple<std::string, __u8, std::string> AttackHID::parseCommand(const std::st
 }
 
 
-void AttackHID::getNextPayload(std::list<__u8 *> ** payload, __u8 endpoint, __u16 maxPacketSize) {
+void AttackHID::getNextPayload(std::list<std::pair<__u8 *, __u64>> ** payload, __u8 endpoint, __u16 maxPacketSize) {
 	if(!this->attackCommands->empty()) {
 		std::string commandString = this->attackCommands->front();
 		std::string commandName, commandParams; __u8 ep;
@@ -50,8 +50,8 @@ void AttackHID::getNextPayload(std::list<__u8 *> ** payload, __u8 endpoint, __u1
 				Command * command = CommandFactory::getInstance()->createInstance(commandName);
 
 				if(command) {
-					std::list<__u8 *> * newPayload = command->execute(commandParams, maxPacketSize);
-					std::copy(newPayload->begin(), newPayload->end(), std::back_insert_iterator<std::list<__u8 *>>(**payload));
+					std::list<std::pair<__u8 *, __u64>> * newPayload = command->execute(commandParams, maxPacketSize);
+					std::copy(newPayload->begin(), newPayload->end(), std::back_insert_iterator<std::list<std::pair<__u8 *, __u64>>>(**payload));
 
 					delete(command);
 					delete(newPayload);
@@ -72,6 +72,9 @@ void AttackHID::loadAttack() {
 		fprintf(stderr, "Attack file is a folder.\n");
 		return;
 	}
+
+	/* Clear for reloads */
+	this->attackCommands->clear();
 
 	std::ifstream attackFile(this->cfg->get("AttackFile"), std::ios::in);
 	std::string line;

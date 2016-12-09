@@ -14,8 +14,8 @@ CommandPressKeys::CommandPressKeys() : Command() {}
 
 CommandPressKeys::~CommandPressKeys() {}
 
-std::list<__u8 *> * CommandPressKeys::preparePayLoad(std::vector<std::string> * params, __u16 maxPacketSize) {
-	std::list<__u8 *> * payLoad = new std::list<__u8 *>;
+std::list<std::pair<__u8 *, __u64>> * CommandPressKeys::preparePayLoad(std::vector<std::string> * params, __u16 maxPacketSize) {
+	std::list<std::pair<__u8 *, __u64>> * payLoad = new std::list<std::pair<__u8 *, __u64>>;
 
 	__u8 * packetPressed = (__u8 *) calloc(maxPacketSize, sizeof(__u8));
 	for(std::vector<std::string>::iterator it = params->begin(); it != params->end(); ++it) {
@@ -27,10 +27,10 @@ std::list<__u8 *> * CommandPressKeys::preparePayLoad(std::vector<std::string> * 
 		packetPressed[0x00] += firstAndThirdByte.first;
 		packetPressed[0x02] = firstAndThirdByte.second;
 	}
-	payLoad->push_back(packetPressed);
+	payLoad->push_back(std::pair<__u8 *, __u64>(packetPressed, maxPacketSize));
 
 	__u8 * packetReleased = (__u8 *) calloc(maxPacketSize, sizeof(__u8));
-	payLoad->push_back(packetReleased);
+	payLoad->push_back(std::pair<__u8 *, __u64>(packetReleased, maxPacketSize));
 
 	return payLoad;
 }
@@ -58,17 +58,17 @@ std::vector<std::string> * CommandPressKeys::parseParams(const std::string &para
 	}
 }
 
-std::list<__u8 *> * CommandPressKeys::execute(const std::string &paramString, __u16 maxPacketSize) {
+std::list<std::pair<__u8 *, __u64>> * CommandPressKeys::execute(const std::string &paramString, __u16 maxPacketSize) {
 	std::vector<std::string> * paramList = this->parseParams(paramString);
 
 	if(paramList) {
-		std::list<__u8 *> * payLoad = this->preparePayLoad(paramList, maxPacketSize);
+		std::list<std::pair<__u8 *, __u64>> * payLoad = this->preparePayLoad(paramList, maxPacketSize);
 		delete(paramList);
 
 		return payLoad;
 	}
 
-	return new std::list<__u8 *>;
+	return new std::list<std::pair<__u8 *, __u64>>;
 }
 
 /* Autoregisters the class into the CommandFactory */

@@ -16,14 +16,14 @@
 
 class CommandPressKeys : public Command {
 private:
-	std::list<__u8 *> * preparePayLoad(std::vector<std::string> *, __u16);
+	std::list<std::pair<__u8 *, __u64>> * preparePayLoad(std::vector<std::string> *, __u16);
 
 public:
 	CommandPressKeys();
 	~CommandPressKeys();
 
 	std::vector<std::string> * parseParams(const std::string &);
-	std::list<__u8 *> * execute(const std::string &, __u16);
+	std::list<std::pair<__u8 *, __u64>> * execute(const std::string &, __u16);
 
 	/* "Creator" method used by the Factory */
 	static Command * createInstance() { return new CommandPressKeys(); }

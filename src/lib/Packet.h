@@ -15,12 +15,12 @@
 class Packet {
 public:
 	__u8	bEndpoint;
-	__u16	wLength;
+	__u64	wLength;
 	bool	filter;
 	bool	transmit;
 	__u8*	data;
 
-	Packet(__u8 _endpoint,__u8* _data,__u16 _length,bool _filter=true) : bEndpoint(_endpoint),wLength(_length),filter(_filter),transmit(true),data(_data) {}
+	Packet(__u8 _endpoint,__u8* _data,__u64 _length,bool _filter=true) : bEndpoint(_endpoint),wLength(_length),filter(_filter),transmit(true),data(_data) {}
 	virtual ~Packet() {if (data) {free(data);data=NULL;}}
 };
 typedef std::shared_ptr<Packet> PacketPtr;

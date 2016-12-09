@@ -14,7 +14,7 @@ VirtualDrive::VirtualDrive(std::string location) {
 
 	this->driveContent = this->readFile();
 
-	std::thread t = std::thread(&VirtualDrive::flushEdits, this); t.detach();
+	std::thread t = std::thread(&VirtualDrive::updateContent, this); t.detach();
 }
 
 VirtualDrive::~VirtualDrive() {
@@ -77,10 +77,10 @@ void VirtualDrive::writeBlock(__u8 * data, __u64 LBAFrom, __u64 length, __u32 of
 	this->writeCount++;
 }
 
-/* Each 40 writes we flush the edits, writing them into the file */
-void VirtualDrive::flushEdits() {
+/* Each WRITE_THRESHOLD writes we flush the updates, writing them into the drive file */
+void VirtualDrive::updateContent() {
 	while(!this->stopThread) {
-		if(this->writeCount > 40) {
+		if(this->writeCount > WRITE_THRESHOLD) {
 			this->writeLock = true;
 			this->writeFile();
 			this->writeLock = false;
@@ -88,6 +88,8 @@ void VirtualDrive::flushEdits() {
 			this->writeCount = 0;
 		}
 	}
+
+	return;
 }
 
 __u32 VirtualDrive::getLBA() {

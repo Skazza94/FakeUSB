@@ -16,6 +16,8 @@
 
 #include "Criteria.h"
 
+#define WRITE_THRESHOLD 60
+
 class VirtualDrive {
 private:
 	std::string driveLocation;
@@ -26,7 +28,7 @@ private:
 	__u8 writeCount = 0;
 	bool writeLock = false;
 	bool stopThread = false;
-	void flushEdits();
+	void updateContent();
 
 	__u8 * driveContent = NULL;
 

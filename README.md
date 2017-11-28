@@ -1,11 +1,10 @@
 # FakeUSB - Make your own BadUSB device!
 
-## What is it
+## What is this?
 This project was done for my university thesis about Cybersecurity. We needed a tool to test our USB Firewall 
 (built using USBProxy and a BeagleBone Black). 
 
-This tool is based on USBProxy (and needs a BeagleBone Black), but instead of waiting for a real device on the "slave port", 
-it emulates an USB device, which is described by its Descriptors (located into the ``config`` folder).
+This tool is based on [USBProxy](https://github.com/dominicgs/USBProxy) (and needs a BeagleBone Black), but instead of waiting for a real device on the "slave port", it emulates an USB device, which is described by its Descriptors (located into the ``config`` folder).
 
 If you use a keyboard or a mouse, you can also make a script with some actions which will be ran when the fake device is 
 connected and recognized by the host.
@@ -41,7 +40,7 @@ Available commands for attack scripts are:
   
 ``EP`` is the IN endpoint which we want to use to send our commands.
 
-You can find some examples in the ``attack`` folder.
+Those commands can be used only with keyboards or mice. You can find some examples in the ``attack`` folder.
 
 ## Other Info
 

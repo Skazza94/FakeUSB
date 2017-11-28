@@ -26,7 +26,7 @@ Current available devices are:
 - ``multimedia``: emulates keyboard + mouse
 - ``mass-storage``: emulates a mass storage device
 
-#Available Commands
+## Available Commands
 
 Available commands for attack scripts are:
 - **Keyboard**
